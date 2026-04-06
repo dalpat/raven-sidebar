@@ -1,5 +1,9 @@
 # Raven Sidebar
 
+<p align="center">
+  <img src="icons/256x256/extension.png" alt="Raven Sidebar" width="128" height="128">
+</p>
+
 A GNOME Shell extension that provides a unified right-side sidebar with calendar, clock, volume/microphone controls, and notifications.
 
 ![Dark Theme](assets/dark.png)
@@ -42,6 +46,10 @@ cp -r extension.js components/ stylesheet.css metadata.json schemas/ icons/ asse
 1. Open **Extensions** app
 2. Find "Raven Sidebar" and enable it
 3. Log out and log back in (required on Wayland)
+
+### From GNOME Extensions (Coming Soon)
+
+The extension will soon be available on the [GNOME Extensions](https://extensions.gnome.org) website. Once approved, you can install it directly from there.
 
 ## Usage
 
