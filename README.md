@@ -2,6 +2,9 @@
 
 A GNOME Shell extension that provides a unified right-side sidebar with calendar, clock, volume/microphone controls, and notifications.
 
+![Dark Theme](assets/dark.png)
+![Light Theme](assets/light.png)
+
 ## Features
 
 - **Clock & Calendar** - Displays current date, time, and an interactive monthly calendar
@@ -31,7 +34,7 @@ Or manually:
 
 ```bash
 mkdir -p ~/.local/share/gnome-shell/extensions/raven-sidebar@dalpat.github.io/
-cp extension.js components/*.js stylesheet.css metadata.json schemas/*.xml ~/.local/share/gnome-shell/extensions/raven-sidebar@dalpat.github.io/
+cp -r extension.js components/ stylesheet.css metadata.json schemas/ icons/ assets/ ~/.local/share/gnome-shell/extensions/raven-sidebar@dalpat.github.io/
 ```
 
 ### Enable the Extension
@@ -62,27 +65,9 @@ gsettings set org.gnome.shell.extensions.raven-sidebar toggle-raven "['<Super>n'
 
 No build step required - files are used directly as ES Modules.
 
-## Troubleshooting
-
-### Changes not taking effect
-
-On Wayland, code changes require a logout/login cycle. CSS-only changes may reload without logout:
-
-```bash
-gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
-  --method org.gnome.Shell.Eval 'Main.loadTheme()'
-```
-
-### Extension not appearing
-
-Check for errors:
-```bash
-journalctl -f -u gnome-shell
-```
-
 ## License
 
-MIT License - see [LICENSE](LICENSE) file.
+GNU General Public License v2 - see [LICENSE](LICENSE) file.
 
 ## Contributing
 
