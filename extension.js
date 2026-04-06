@@ -20,6 +20,10 @@ export default class RavenSidebarExtension extends Extension {
     disable() {
         Main.wm.removeKeybinding('toggle-raven');
 
+        if (this._buttonSignalId) {
+            this._button.disconnect(this._buttonSignalId);
+            this._buttonSignalId = null;
+        }
         if (this._button) {
             this._button.destroy();
             this._button = null;
@@ -40,7 +44,7 @@ export default class RavenSidebarExtension extends Extension {
             icon_name:   'preferences-system-notifications-symbolic',
             style_class: 'system-status-icon',
         }));
-        this._button.connect('button-press-event', () => {
+        this._buttonSignalId = this._button.connect('button-press-event', () => {
             this._sidebar.toggle();
             return Clutter.EVENT_STOP;
         });
