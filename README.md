@@ -2,16 +2,14 @@
 
 A GNOME Shell extension that provides a unified right-side sidebar with calendar, clock, volume/microphone controls, and notifications.
 
-![Raven Sidebar](https://placehold.co/400x300/1a1a2e/eee?text=Raven+Sidebar)
-
 ## Features
 
 - **Clock & Calendar** - Displays current date, time, and an interactive monthly calendar
 - **Volume Control** - Quick access to system audio output volume
 - **Microphone Control** - Quick access to microphone input volume
 - **Notifications** - View and manage system notifications
-- **Keyboard Shortcut** - Toggle sidebar with `Super + V`
-- **Theme Aware** - Follows your system dark/light theme preference
+- **Keyboard Shortcut** - Toggle sidebar with `Super + \` (backslash)
+- **Theme Options** - Choose between system, dark, or light theme
 
 ## Requirements
 
@@ -24,15 +22,12 @@ A GNOME Shell extension that provides a unified right-side sidebar with calendar
 ### From Source
 
 ```bash
-# Clone the repository
 git clone https://github.com/dalpat/raven-sidebar.git
 cd raven-sidebar
-
-# Run the install script
 ./install.sh
 ```
 
-Or manually copy files:
+Or manually:
 
 ```bash
 mkdir -p ~/.local/share/gnome-shell/extensions/raven-sidebar@dalpat.github.io/
@@ -41,39 +36,37 @@ cp extension.js components/*.js stylesheet.css metadata.json schemas/*.xml ~/.lo
 
 ### Enable the Extension
 
-1. Open **Extensions** app (or press `Alt+F2` and type `extensions`)
+1. Open **Extensions** app
 2. Find "Raven Sidebar" and enable it
 3. Log out and log back in (required on Wayland)
 
 ## Usage
 
 - Click the notification icon in the top-right panel to toggle the sidebar
-- Press `Super + V` to toggle the sidebar via keyboard
-- Switch between **Widgets** and **Notifications** tabs using the tab bar
+- Press `Super + \` to toggle the sidebar via keyboard
+- Switch between **Widgets** and **Notifications** tabs
 
 ## Configuration
 
-You can configure the keyboard shortcut in GNOME Settings:
+Configure via `gsettings`:
 
-1. Open **Settings** → **Keyboard** → **View and Custom Shortcuts**
-2. Find "Toggle Raven Sidebar" under "Custom Shortcuts"
-3. Click to modify the binding
+```bash
+# Set theme (system, dark, or light)
+gsettings set org.gnome.shell.extensions.raven-sidebar theme dark
 
-## Building from Source
+# Change keyboard shortcut
+gsettings set org.gnome.shell.extensions.raven-sidebar toggle-raven "['<Super>n']"
+```
 
-This extension is built from source with:
+## Building
 
-- ES Modules (GNOME 45+)
-- GObject Introspection (GJS)
-- CSS for styling
-
-No build step required - files are used directly.
+No build step required - files are used directly as ES Modules.
 
 ## Troubleshooting
 
 ### Changes not taking effect
 
-On Wayland, code changes require a full logout/login cycle. CSS-only changes may reload without logout using:
+On Wayland, code changes require a logout/login cycle. CSS-only changes may reload without logout:
 
 ```bash
 gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
@@ -82,19 +75,15 @@ gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
 
 ### Extension not appearing
 
-Check the journal for errors:
+Check for errors:
 ```bash
 journalctl -f -u gnome-shell
 ```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file.
 
 ## Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) before submitting PRs.
-
----
-
-Made with ❤️ for GNOME
+See [CONTRIBUTING.md](CONTRIBUTING.md).
