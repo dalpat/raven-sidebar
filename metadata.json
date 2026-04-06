@@ -1,0 +1,9 @@
+{
+  "uuid": "raven-sidebar@dalpat.github.io",
+  "name": "Raven Sidebar",
+  "description": "A unified sidebar with calendar, notifications, and quick settings.",
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
+  "url": "https://github.com/dalpat/raven-sidebar",
+  "version": 1,
+  "settings-schema": "org.gnome.shell.extensions.raven-sidebar"
+}

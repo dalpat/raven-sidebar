@@ -1,0 +1,26 @@
+/*
+ * Raven Sidebar — stylesheet.css
+ *
+ * Styles have moved into their component files (Vue SFC philosophy).
+ * Each component exports a CSS string constant that StyleManager assembles
+ * and loads at runtime via St.Theme.load_stylesheet().
+ *
+ * Component → CSS location:
+ *   Sidebar shell        components/Sidebar.js            (.raven-sidebar)
+ *   Theme bar            components/ThemeBar.js           (.raven-themebar / .raven-theme-btn*)
+ *   Light overrides      components/ThemeManager.js       (.raven-light .raven-*)
+ *   Tab bar              components/TabBar.js              (.raven-tabbar / .raven-tab*)
+ *   Slider               components/SliderBar.js           (.raven-slider-track)
+ *   Clock                components/ClockWidget.js         (.raven-clock-*)
+ *   Calendar             components/CalendarWidget.js      (.raven-calendar* / .raven-cal-*)
+ *   Volume section       components/VolumeSection.js       (.raven-volume-*)
+ *   Mic section          components/MicSection.js          (.raven-mic-*)
+ *   Brightness section   components/BrightnessSection.js   (.raven-brightness-*)
+ *   Widgets page         components/WidgetsPage.js         (.raven-widgets-content / .raven-error-label)
+ *   Notifications page   components/NotificationsPage.js   (.raven-notifs-content)
+ *   Notification item    components/NotificationItem.js    (.raven-notif-* / .raven-dismiss-*)
+ *   Notification list    components/NotificationList.js    (.raven-notif-list* / .raven-clear-btn)
+ *
+ * This file is intentionally empty — it exists only because GNOME Shell
+ * requires stylesheet.css to be present in the extension directory.
+ */
