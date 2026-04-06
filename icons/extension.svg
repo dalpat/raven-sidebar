@@ -1,69 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="512" height="512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1E1B26"/>
-      <stop offset="100%" style="stop-color:#2D2A36"/>
+    <!-- Base Drop Shadow for the Monitor -->
+    <filter id="baseShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+
+    <!-- Left Drop Shadow for the Sidebar to give it elevation -->
+    <filter id="sidebarShadow" x="-30%" y="-20%" width="150%" height="140%">
+      <feDropShadow dx="-6" dy="0" stdDeviation="8" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <!-- GNOME Dark Background Gradient -->
+    <linearGradient id="desktopGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#241f31" />
+      <stop offset="100%" stop-color="#1e1b26" />
     </linearGradient>
+
+    <!-- GNOME Blue Sidebar Gradient -->
+    <linearGradient id="sidebarGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3584e4" />
+      <stop offset="100%" stop-color="#1a5fb4" />
+    </linearGradient>
+
+    <!-- Clip Path to keep elements inside the rounded monitor -->
+    <clipPath id="screenClip">
+      <rect x="16" y="32" width="224" height="192" rx="20" />
+    </clipPath>
   </defs>
-  
-  <!-- Background rounded rect (dark theme) -->
-  <rect x="8" y="8" width="112" height="112" rx="20" fill="url(#bg)"/>
-  
-  <!-- Sidebar panel -->
-  <rect x="28" y="12" width="76" height="104" rx="10" fill="#444650" opacity="0.8"/>
-  
-  <!-- Purple accent line on left edge -->
-  <rect x="28" y="12" width="3" height="104" rx="1.5" fill="#A855F7"/>
-  
-  <!-- Top tabs -->
-  <rect x="34" y="18" width="28" height="10" rx="4" fill="#A855F7"/>
-  <rect x="66" y="18" width="28" height="10" rx="4" fill="rgba(255,255,255,0.1)"/>
-  <text x="48" y="25" text-anchor="middle" fill="white" font-family="sans-serif" font-size="6" font-weight="bold">Widgets</text>
-  <text x="80" y="25" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="sans-serif" font-size="6">Notif</text>
-  
-  <!-- Theme toggle (top right) -->
-  <rect x="76" y="16" width="20" height="8" rx="4" fill="rgba(255,255,255,0.1)"/>
-  <circle cx="81" cy="20" r="2.5" fill="#FCD34D"/>
-  <circle cx="91" cy="20" r="2" fill="rgba(255,255,255,0.3)"/>
-  
-  <!-- Clock 11:34 -->
-  <text x="42" y="42" text-anchor="start" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">11:34</text>
-  <rect x="38" y="46" width="50" height="8" rx="4" fill="rgba(255,255,255,0.1)"/>
-  <text x="63" y="51" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="sans-serif" font-size="5">Monday, 31 March</text>
-  
-  <!-- Calendar grid -->
-  <rect x="36" y="58" width="56" height="32" rx="4" fill="rgba(0,0,0,0.2)"/>
-  <!-- Calendar header dots -->
-  <circle cx="42" cy="62" r="1" fill="rgba(255,255,255,0.4)"/>
-  <circle cx="64" cy="62" r="1" fill="rgba(255,255,255,0.4)"/>
-  <circle cx="86" cy="62" r="1" fill="rgba(255,255,255,0.4)"/>
-  <!-- Calendar day numbers -->
-  <text x="42" y="70" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">1</text>
-  <text x="50" y="70" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">2</text>
-  <text x="58" y="70" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">3</text>
-  <text x="66" y="70" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">4</text>
-  <text x="74" y="70" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">5</text>
-  <text x="82" y="70" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">6</text>
-  <text x="42" y="77" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">7</text>
-  <text x="50" y="77" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">8</text>
-  <text x="58" y="77" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">9</text>
-  <text x="66" y="77" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">10</text>
-  <text x="74" y="77" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="4">11</text>
-  <text x="82" y="77" fill="white" font-family="sans-serif" font-size="4" font-weight="bold">12</text>
-  <!-- Today circle -->
-  <circle cx="82" cy="77" r="4" fill="none" stroke="#A855F7" stroke-width="1"/>
-  
-  <!-- Volume slider -->
-  <rect x="36" y="94" width="8" height="3" rx="1.5" fill="rgba(255,255,255,0.1)"/>
-  <rect x="36" y="94" width="5" height="3" rx="1.5" fill="#A855F7"/>
-  <rect x="36" y="97" width="56" height="1" rx="0.5" fill="rgba(255,255,255,0.15)"/>
-  <rect x="36" y="97" width="38" height="1" rx="0.5" fill="rgba(255,255,255,0.5)"/>
-  
-  <!-- Mic slider -->
-  <rect x="36" y="102" width="56" height="1" rx="0.5" fill="rgba(255,255,255,0.15)"/>
-  <rect x="36" y="102" width="30" height="1" rx="0.5" fill="rgba(255,255,255,0.5)"/>
-  
-  <!-- Brightness slider -->
-  <rect x="36" y="107" width="56" height="1" rx="0.5" fill="rgba(255,255,255,0.15)"/>
-  <rect x="36" y="107" width="42" height="1" rx="0.5" fill="rgba(255,255,255,0.5)"/>
+
+  <!-- 1. Monitor Base (with shadow) -->
+  <rect x="16" y="32" width="224" height="192" rx="20" fill="url(#desktopGrad)" filter="url(#baseShadow)"/>
+
+  <!-- Inside the Screen -->
+  <g clip-path="url(#screenClip)">
+    
+    <!-- Subtle Desktop Background Swoosh -->
+    <path d="M -20 160 Q 128 80 260 200 L 260 256 L -20 256 Z" fill="#3584e4" opacity="0.06" />
+    
+    <!-- GNOME Top Bar -->
+    <rect x="16" y="32" width="224" height="20" fill="#000000" opacity="0.4" />
+    <rect x="116" y="38" width="24" height="8" rx="4" fill="#ffffff" opacity="0.5" />
+
+    <!-- 2. The Raven Sidebar sliding out from the right -->
+    <rect x="140" y="32" width="100" height="192" fill="url(#sidebarGrad)" filter="url(#sidebarShadow)" />
+
+    <!-- 3. Sidebar UI Elements (Widgets) -->
+    
+    <!-- User Avatar & Name -->
+    <circle cx="166" cy="70" r="12" fill="#ffffff" opacity="0.9" />
+    <rect x="186" y="66" width="38" height="8" rx="4" fill="#ffffff" opacity="0.9" />
+
+    <!-- Widget 1: Media Player / Calendar -->
+    <rect x="156" y="100" width="68" height="40" rx="8" fill="#ffffff" opacity="0.2" />
+    <circle cx="176" cy="120" r="8" fill="#ffffff" opacity="0.3" />
+    <rect x="190" y="112" width="24" height="6" rx="3" fill="#ffffff" opacity="0.3" />
+    <rect x="190" y="122" width="16" height="4" rx="2" fill="#ffffff" opacity="0.3" />
+
+    <!-- Widget 2: Square Buttons / Toggles -->
+    <rect x="156" y="152" width="30" height="30" rx="8" fill="#ffffff" opacity="0.2" />
+    <rect x="194" y="152" width="30" height="30" rx="8" fill="#ffffff" opacity="0.2" />
+
+    <!-- Widget 3: Notification List -->
+    <rect x="156" y="196" width="68" height="6" rx="3" fill="#ffffff" opacity="0.15" />
+    <rect x="156" y="208" width="48" height="6" rx="3" fill="#ffffff" opacity="0.15" />
+
+  </g>
+
+  <!-- 4. Glossy Monitor Outline (Stroke over everything) -->
+  <rect x="16" y="32" width="224" height="192" rx="20" fill="none" stroke="#3d3846" stroke-width="2" />
+
 </svg>
