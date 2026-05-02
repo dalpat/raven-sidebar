@@ -1,9 +1,9 @@
-import St from 'gi://St';
-import Clutter from 'gi://Clutter';
-import GLib from 'gi://GLib';
-import { Component } from './Component.js';
+import St from "gi://St";
+import Clutter from "gi://Clutter";
+import GLib from "gi://GLib";
+import { Component } from "./Component.js";
 
-const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 export const CSS = `
@@ -105,129 +105,145 @@ export const CSS = `
 // Self-contained calendar with month navigation.
 // State: currently displayed month (_calDate).
 export class CalendarWidget extends Component {
-    constructor() {
-        super();
-        this._calDate = GLib.DateTime.new_now_local();
-        this.actor    = this._build();
+  constructor() {
+    super();
+    this._calDate = GLib.DateTime.new_now_local();
+    this.actor = this._build();
+  }
+
+  // --- private ---
+
+  _build() {
+    const section = new St.BoxLayout({
+      orientation: Clutter.Orientation.VERTICAL,
+      x_expand: true,
+      style_class: "raven-calendar-section",
+    });
+
+    section.add_child(
+      new St.Label({
+        text: "CALENDAR",
+        style_class: "raven-calendar-header-label",
+      }),
+    );
+
+    this._grid = new St.BoxLayout({
+      orientation: Clutter.Orientation.VERTICAL,
+      x_expand: true,
+      style_class: "raven-calendar",
+    });
+    this._render();
+    section.add_child(this._grid);
+    return section;
+  }
+
+  _render() {
+    this._grid.destroy_all_children();
+
+    const year = this._calDate.get_year();
+    const month = this._calDate.get_month(); // 1-12
+    const today = GLib.DateTime.new_now_local();
+
+    // Navigation header
+    const header = new St.BoxLayout({
+      x_expand: true,
+      style_class: "raven-cal-header-row",
+    });
+
+    const prev = new St.Button({ label: "‹", style_class: "raven-cal-nav" });
+    prev.connect("clicked", () => {
+      this._calDate = this._calDate.add_months(-1);
+      this._render();
+    });
+
+    const monthLabel = new St.Label({
+      text: `${this._calDate.format("%B")} ${year}`,
+      x_expand: true,
+      style_class: "raven-cal-month-label",
+    });
+
+    const next = new St.Button({ label: "›", style_class: "raven-cal-nav" });
+    next.connect("clicked", () => {
+      this._calDate = this._calDate.add_months(1);
+      this._render();
+    });
+
+    header.add_child(prev);
+    header.add_child(monthLabel);
+    header.add_child(next);
+    this._grid.add_child(header);
+
+    // Weekday headings — Su and Sa use the weekend tint
+    const headRow = new St.BoxLayout({ x_expand: true });
+    for (const [i, d] of WEEKDAYS.entries()) {
+      const isWeekend = i === 0 || i === 6;
+      headRow.add_child(
+        new St.Label({
+          text: d,
+          x_expand: true,
+          style_class: `raven-cal-weekday-label${isWeekend ? " raven-cal-weekday-weekend" : ""}`,
+        }),
+      );
+    }
+    this._grid.add_child(headRow);
+
+    // Day cells — JS Date for reliable arithmetic across GJS versions
+    const startOffset = new Date(year, month - 1, 1).getDay(); // 0=Sun
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    // Use St.Button for ALL cells (including blanks) so every cell gets the same
+    // internal padding from the theme — mixing St.Label + St.Button caused
+    // column widths to diverge in partial rows (first / last row).
+    const makeBlank = () =>
+      new St.Button({
+        label: "",
+        x_expand: true,
+        reactive: false,
+        can_focus: false,
+        style_class: "raven-cal-day",
+        opacity: 0, // invisible but occupies identical space to a day cell
+      });
+
+    let col = startOffset;
+    let row = new St.BoxLayout({ x_expand: true });
+
+    for (let i = 0; i < startOffset; i++) row.add_child(makeBlank());
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayOfWeek = (startOffset + day - 1) % 7; // 0=Sun … 6=Sat
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      const isToday =
+        today &&
+        year === today.get_year() &&
+        month === today.get_month() &&
+        day === today.get_day_of_month();
+
+      let cls = "raven-cal-day";
+      if (isToday) cls += " raven-cal-today";
+      else if (isWeekend) cls += " raven-cal-weekend";
+
+      row.add_child(
+        new St.Button({
+          label: String(day),
+          x_expand: true,
+          style_class: cls,
+        }),
+      );
+
+      if (++col === 7) {
+        this._grid.add_child(row);
+        row = new St.BoxLayout({ x_expand: true });
+        col = 0;
+      }
     }
 
-    // --- private ---
-
-    _build() {
-        const section = new St.BoxLayout({
-            orientation: Clutter.Orientation.VERTICAL,
-            x_expand:    true,
-            style_class: 'raven-calendar-section',
-        });
-
-        section.add_child(new St.Label({
-            text:        'CALENDAR',
-            style_class: 'raven-calendar-header-label',
-        }));
-
-        this._grid = new St.BoxLayout({
-            orientation: Clutter.Orientation.VERTICAL,
-            x_expand:    true,
-            style_class: 'raven-calendar',
-        });
-        this._render();
-        section.add_child(this._grid);
-        return section;
+    // Pad last row with invisible blanks — same type ensures equal column widths
+    if (col > 0) {
+      while (col < 7) {
+        row.add_child(makeBlank());
+        col++;
+      }
+      this._grid.add_child(row);
     }
-
-    _render() {
-        this._grid.destroy_all_children();
-
-        const year  = this._calDate.get_year();
-        const month = this._calDate.get_month(); // 1-12
-        const today = GLib.DateTime.new_now_local();
-
-        // Navigation header
-        const header = new St.BoxLayout({
-            x_expand:    true,
-            style_class: 'raven-cal-header-row',
-        });
-
-        const prev = new St.Button({ label: '‹', style_class: 'raven-cal-nav' });
-        prev.connect('clicked', () => { this._calDate = this._calDate.add_months(-1); this._render(); });
-
-        const monthLabel = new St.Label({
-            text:        `${this._calDate.format('%B')} ${year}`,
-            x_expand:    true,
-            style_class: 'raven-cal-month-label',
-        });
-
-        const next = new St.Button({ label: '›', style_class: 'raven-cal-nav' });
-        next.connect('clicked', () => { this._calDate = this._calDate.add_months(1); this._render(); });
-
-        header.add_child(prev);
-        header.add_child(monthLabel);
-        header.add_child(next);
-        this._grid.add_child(header);
-
-        // Weekday headings — Su and Sa use the weekend tint
-        const headRow = new St.BoxLayout({ x_expand: true });
-        for (const [i, d] of WEEKDAYS.entries()) {
-            const isWeekend = i === 0 || i === 6;
-            headRow.add_child(new St.Label({
-                text:        d,
-                x_expand:    true,
-                style_class: `raven-cal-weekday-label${isWeekend ? ' raven-cal-weekday-weekend' : ''}`,
-            }));
-        }
-        this._grid.add_child(headRow);
-
-        // Day cells — JS Date for reliable arithmetic across GJS versions
-        const startOffset = new Date(year, month - 1, 1).getDay(); // 0=Sun
-        const daysInMonth = new Date(year, month,     0).getDate();
-
-        // Use St.Button for ALL cells (including blanks) so every cell gets the same
-        // internal padding from the theme — mixing St.Label + St.Button caused
-        // column widths to diverge in partial rows (first / last row).
-        const makeBlank = () => new St.Button({
-            label:       '',
-            x_expand:    true,
-            reactive:    false,
-            can_focus:   false,
-            style_class: 'raven-cal-day',
-            opacity:     0,   // invisible but occupies identical space to a day cell
-        });
-
-        let col = startOffset;
-        let row = new St.BoxLayout({ x_expand: true });
-
-        for (let i = 0; i < startOffset; i++)
-            row.add_child(makeBlank());
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayOfWeek = (startOffset + day - 1) % 7; // 0=Sun … 6=Sat
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-            const isToday   = today &&
-                year  === today.get_year()        &&
-                month === today.get_month()       &&
-                day   === today.get_day_of_month();
-
-            let cls = 'raven-cal-day';
-            if (isToday)        cls += ' raven-cal-today';
-            else if (isWeekend) cls += ' raven-cal-weekend';
-
-            row.add_child(new St.Button({
-                label:       String(day),
-                x_expand:    true,
-                style_class: cls,
-            }));
-
-            if (++col === 7) {
-                this._grid.add_child(row);
-                row = new St.BoxLayout({ x_expand: true });
-                col = 0;
-            }
-        }
-
-        // Pad last row with invisible blanks — same type ensures equal column widths
-        if (col > 0) {
-            while (col < 7) { row.add_child(makeBlank()); col++; }
-            this._grid.add_child(row);
-        }
-    }
+  }
 }

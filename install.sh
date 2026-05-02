@@ -3,7 +3,7 @@
 DEST=~/.local/share/gnome-shell/extensions/raven-sidebar@dalpat.github.io
 
 echo "Copying files..."
-cp -r ~/raven-sidebar/* "$DEST"/
+cp -r ~/development/gnome-extensions/raven-sidebar/* "$DEST"/
 
 echo "Compiling schemas..."
 glib-compile-schemas "$DEST/schemas/"
