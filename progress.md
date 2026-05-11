@@ -45,3 +45,31 @@
 - `components/WidgetsPage.js`: Imports `WIDGETS` from `./widgets/index.js`. Constructs registered widgets in a loop: filters by `isAvailable(deps)`, wraps each in `_safeBuild`, stores in `this._widgets`. Lifecycle dispatch (`onSidebarOpen`/`onSidebarClose`/`destroy`) iterates `this._widgets`. Non-migrated widgets (Calendar, Volume, Mic, Brightness) still constructed individually. Layout order: registered widgets first, then non-migrated widgets.
 
 - Removed `components/ClockWidget.js` (moved to `components/widgets/ClockWidget.js`).
+
+## Issue #10: Migrate remaining widgets + error boundaries
+
+- [x] All five widgets live in `components/widgets/` and extend `BaseWidget`.
+- [x] `widgets/index.js` exports `WIDGETS` in correct display order.
+- [x] `BrightnessWidget` is skipped when `Main.brightnessManager` is unavailable.
+- [x] A widget that throws during construction shows an error label instead of crashing the sidebar.
+- [x] A widget with a null `actor` shows an error label.
+- [x] Existing widget behavior (clock timer, volume slider, etc.) is unchanged.
+- [x] `npm test` and `npm run typecheck` pass.
+
+### Implemented
+
+- `components/widgets/CalendarWidget.js`: Moved from `components/CalendarWidget.js`. Now extends `BaseWidget` instead of `Component`. Accepts `deps` in constructor (passed to `super(deps)`). No lifecycle overrides needed (calendar is static; `onSidebarOpen`/`onSidebarClose` inherited as no-ops).
+
+- `components/widgets/VolumeWidget.js`: Moved from `components/VolumeSection.js`. Class renamed `VolumeSection` → `VolumeWidget`. Extends `BaseWidget`. `onSidebarOpen()` calls `this.refresh()`. Constructor takes `deps.mixer`. CSS class names unchanged (`.raven-volume-section` etc.).
+
+- `components/widgets/MicWidget.js`: Moved from `components/MicSection.js`. Class renamed `MicSection` → `MicWidget`. Extends `BaseWidget`. `onSidebarOpen()` calls `this.refresh()`. Constructor takes `deps.mixer`. CSS class names unchanged (`.raven-mic-section` etc.).
+
+- `components/widgets/BrightnessWidget.js`: Moved from `components/BrightnessSection.js`. Class renamed `BrightnessSection` → `BrightnessWidget`. Extends `BaseWidget`. `static isAvailable()` checks `Main.brightnessManager`. `onSidebarOpen()` calls `this.refresh()`. CSS class names unchanged (`.raven-brightness-section` etc.).
+
+- `components/widgets/index.js`: Updated to export all five widgets in display order: `[ClockWidget, CalendarWidget, VolumeWidget, MicWidget, BrightnessWidget]`. `WIDGET_CSS` concatenates CSS from all five.
+
+- `components/StyleManager.js`: Removed individual CSS imports for `CalendarWidget`, `VolumeSection`, `MicSection`, `BrightnessSection`. All widget CSS now comes from `WIDGET_CSS` via the registry.
+
+- `components/WidgetsPage.js`: Removed individual imports and construction of Calendar, Volume, Mic, Brightness. All widgets now constructed via `WIDGETS` registry loop. Added null-actor validation: widgets with `actor === null` after construction get an error label. Error actors collected in `_errorActors` and appended to layout after valid widgets.
+
+- Removed `components/CalendarWidget.js`, `components/VolumeSection.js`, `components/MicSection.js`, `components/BrightnessSection.js`.

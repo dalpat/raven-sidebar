@@ -1,10 +1,9 @@
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import { Component } from './Component.js';
-import { SliderBar } from './SliderBar.js';
+import { BaseWidget } from '../BaseWidget.js';
+import { SliderBar } from '../SliderBar.js';
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 export const CSS = `
 .raven-brightness-section {
     background-color: rgba(255,255,255,0.04);
@@ -28,13 +27,20 @@ export const CSS = `
 }
 `;
 
-// Brightness control section. Uses Main.brightnessManager (GNOME 49+).
-export class BrightnessSection extends Component {
-    constructor() {
-        super();
+export class BrightnessWidget extends BaseWidget {
+    static isAvailable(deps) {
+        return !!Main.brightnessManager;
+    }
+
+    constructor(deps) {
+        super(deps);
         this._slider = new SliderBar({ onChange: v => this._onSliderChange(v) });
         this.actor   = this._build();
         this._initBrightness();
+    }
+
+    onSidebarOpen() {
+        this.refresh();
     }
 
     refresh() {
@@ -58,8 +64,6 @@ export class BrightnessSection extends Component {
         this._slider.destroy();
         super.destroy();
     }
-
-    // --- private ---
 
     _build() {
         const section = new St.BoxLayout({
@@ -98,7 +102,6 @@ export class BrightnessSection extends Component {
 
         const scale = Main.brightnessManager.globalScale;
         if (scale !== undefined && scale !== null) {
-            // BrightnessScale is usually a GObject with a 'value' property in GNOME 49
             if (scale.connect) {
                 this._connect(scale, 'notify::value', () => {
                     this.refresh();
@@ -123,10 +126,8 @@ export class BrightnessSection extends Component {
         if (scale.value !== undefined) {
             scale.value = val;
         } else {
-            // Fallback for cases where globalScale itself is the numeric value
             Main.brightnessManager.globalScale = val;
         }
         this._percLabel.text = `${Math.round(val * 100)}%`;
     }
 }
-

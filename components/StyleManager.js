@@ -10,10 +10,6 @@ import { LIGHT_CSS }                from './ThemeManager.js';
 import { CSS as TabBarCSS }          from './TabBar.js';
 import { CSS as SliderBarCSS }       from './SliderBar.js';
 import { WIDGET_CSS }              from './widgets/index.js';
-import { CSS as CalendarCSS }        from './CalendarWidget.js';
-import { CSS as VolumeSectionCSS }   from './VolumeSection.js';
-import { CSS as MicSectionCSS }      from './MicSection.js';
-import { CSS as BrightnessSectionCSS } from './BrightnessSection.js';
 import { CSS as WidgetsPageCSS }     from './WidgetsPage.js';
 import { CSS as NotifPageCSS }       from './NotificationsPage.js';
 import { CSS as NotifItemCSS }       from './NotificationItem.js';
@@ -26,10 +22,6 @@ const COMPONENT_STYLES = [
     TabBarCSS,
     SliderBarCSS,
     WIDGET_CSS,
-    CalendarCSS,
-    VolumeSectionCSS,
-    MicSectionCSS,
-    BrightnessSectionCSS,
     WidgetsPageCSS,
     NotifPageCSS,
     NotifItemCSS,

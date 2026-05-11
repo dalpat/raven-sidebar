@@ -1,10 +1,9 @@
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import Gvc from 'gi://Gvc';
-import { Component } from './Component.js';
-import { SliderBar } from './SliderBar.js';
+import { BaseWidget } from '../BaseWidget.js';
+import { SliderBar } from '../SliderBar.js';
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 export const CSS = `
 .raven-mic-section {
     background-color: rgba(255,255,255,0.04);
@@ -28,16 +27,19 @@ export const CSS = `
 }
 `;
 
-// Microphone control section. Props: { mixer: Gvc.MixerControl }
-export class MicSection extends Component {
-    constructor({ mixer }) {
-        super();
-        this._mixer  = mixer;
+export class MicWidget extends BaseWidget {
+    constructor(deps) {
+        super(deps);
+        this._mixer  = deps.mixer;
         this._slider = new SliderBar({ onChange: v => this._onSliderChange(v) });
         this.actor   = this._build();
 
-        this._connect(mixer, 'state-changed',          () => this.refresh());
-        this._connect(mixer, 'default-source-changed', () => this.refresh());
+        this._connect(this._mixer, 'state-changed',          () => this.refresh());
+        this._connect(this._mixer, 'default-source-changed', () => this.refresh());
+        this.refresh();
+    }
+
+    onSidebarOpen() {
         this.refresh();
     }
 
@@ -54,8 +56,6 @@ export class MicSection extends Component {
         this._slider.destroy();
         super.destroy();
     }
-
-    // --- private ---
 
     _build() {
         const section = new St.BoxLayout({
