@@ -33,7 +33,10 @@ export class WidgetsPage extends Component {
             if (!WidgetClass.isAvailable(deps)) continue;
             const tag = WidgetClass.id;
             const widget = this._safeBuild(tag, () => new WidgetClass(deps));
-            if (!widget) continue;
+            if (!widget) {
+                this._errorActors.push(this._errorLabel(tag));
+                continue;
+            }
             if (!widget.actor) {
                 this._buildErrors[tag] = new Error('widget.actor is null');
                 this._errorActors.push(this._errorLabel(tag));

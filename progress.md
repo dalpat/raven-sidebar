@@ -73,3 +73,31 @@
 - `components/WidgetsPage.js`: Removed individual imports and construction of Calendar, Volume, Mic, Brightness. All widgets now constructed via `WIDGETS` registry loop. Added null-actor validation: widgets with `actor === null` after construction get an error label. Error actors collected in `_errorActors` and appended to layout after valid widgets.
 
 - Removed `components/CalendarWidget.js`, `components/VolumeSection.js`, `components/MicSection.js`, `components/BrightnessSection.js`.
+
+## Issue #11: WidgetsPage orchestrator tests
+
+- [x] `WidgetsPage.test.js` exists in `components/__tests__/`.
+- [x] All tests pass with `npm test`.
+- [x] Tests do not depend on real GNOME Shell imports (mock `St`, `Clutter`, `Gvc`, etc.).
+- [x] Tests verify external orchestration behavior, not internal implementation details.
+- [x] Bug fix: construction error boundary now correctly renders error labels (was only rendering for null actors).
+
+### Implemented
+
+- `components/__tests__/WidgetsPage.test.js`: 14 tests covering:
+  - `isAvailable` filtering: only available widgets are instantiated
+  - `isAvailable` filtering: skips all widgets if none are available
+  - Lifecycle dispatch: `onSidebarOpen()` called on all widgets when sidebar opens
+  - Lifecycle dispatch: `onSidebarClose()` called on all widgets when sidebar closes
+  - Lifecycle dispatch: unavailable widgets are not called
+  - `destroy()` called on all widgets during teardown
+  - `destroy()` not called on unavailable widgets
+  - Construction error boundary: widget that throws renders an error label
+  - Error label contains widget ID and error message
+  - Sidebar continues working after a widget fails to construct
+  - Null-actor validation: widget with `actor = null` renders an error label
+  - Null-actor widget is not included in lifecycle dispatch
+  - Registry order preservation: widgets appear in layout order matching `WIDGETS` array
+  - Mixed availability: some available, some not, some failing
+
+- `components/WidgetsPage.js`: Fixed error label rendering for construction throws. Previously, `_safeBuild` caught construction errors and stored them in `_buildErrors` but the loop's `if (!widget) continue` skipped error label creation. Now the loop adds an error label via `_errorLabel(tag)` when `_safeBuild` returns null.
