@@ -9,7 +9,7 @@ import { CSS as ThemeBarCSS }       from './ThemeBar.js';
 import { LIGHT_CSS }                from './ThemeManager.js';
 import { CSS as TabBarCSS }          from './TabBar.js';
 import { CSS as SliderBarCSS }       from './SliderBar.js';
-import { CSS as ClockWidgetCSS }     from './ClockWidget.js';
+import { WIDGET_CSS }              from './widgets/index.js';
 import { CSS as CalendarCSS }        from './CalendarWidget.js';
 import { CSS as VolumeSectionCSS }   from './VolumeSection.js';
 import { CSS as MicSectionCSS }      from './MicSection.js';
@@ -25,7 +25,7 @@ const COMPONENT_STYLES = [
     LIGHT_CSS,
     TabBarCSS,
     SliderBarCSS,
-    ClockWidgetCSS,
+    WIDGET_CSS,
     CalendarCSS,
     VolumeSectionCSS,
     MicSectionCSS,

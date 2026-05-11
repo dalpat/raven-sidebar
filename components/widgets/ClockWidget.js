@@ -1,9 +1,8 @@
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
-import { Component } from './Component.js';
+import { BaseWidget } from '../BaseWidget.js';
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 export const CSS = `
 .raven-clock-box {
     background: linear-gradient(145deg, rgba(55,65,175,0.4), rgba(120,45,160,0.35));
@@ -28,16 +27,14 @@ export const CSS = `
 }
 `;
 
-// Clock header widget.
-// Call start() when visible, stop() when hidden to manage the timer.
-export class ClockWidget extends Component {
-    constructor() {
-        super();
+export class ClockWidget extends BaseWidget {
+    constructor(deps) {
+        super(deps);
         this._timerId = null;
-        this.actor    = this._build();
+        this.actor = this._build();
     }
 
-    start() {
+    onSidebarOpen() {
         this._tick();
         if (!this._timerId) {
             this._timerId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60, () => {
@@ -47,7 +44,7 @@ export class ClockWidget extends Component {
         }
     }
 
-    stop() {
+    onSidebarClose() {
         if (this._timerId) {
             GLib.source_remove(this._timerId);
             this._timerId = null;
@@ -55,11 +52,9 @@ export class ClockWidget extends Component {
     }
 
     destroy() {
-        this.stop();
+        this.onSidebarClose();
         super.destroy();
     }
-
-    // --- private ---
 
     _build() {
         const box = new St.BoxLayout({
@@ -68,7 +63,6 @@ export class ClockWidget extends Component {
             style_class: 'raven-clock-box',
         });
 
-        // Initialise with real time at build time so ScrollView allocates correct height immediately.
         const now = GLib.DateTime.new_now_local();
         const h   = now ? now.get_hour() : 0;
         const m   = now ? String(now.get_minute()).padStart(2, '0') : '00';

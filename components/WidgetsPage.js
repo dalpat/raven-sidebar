@@ -2,7 +2,7 @@ import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import Gvc from 'gi://Gvc';
 import { Component } from './Component.js';
-import { ClockWidget } from './ClockWidget.js';
+import { WIDGETS } from './widgets/index.js';
 import { CalendarWidget } from './CalendarWidget.js';
 import { VolumeSection } from './VolumeSection.js';
 import { MicSection } from './MicSection.js';
@@ -30,10 +30,19 @@ export class WidgetsPage extends Component {
     constructor() {
         super();
         this._mixer = this._createMixer();
+        const deps = { mixer: this._mixer };
 
-        // Build sub-components, catching construction errors individually
-        this._clock    = this._safeBuild('clock',    () => new ClockWidget());
-        this._calendar = this._safeBuild('calendar', () => new CalendarWidget());
+        // Build registered widgets through the plugin pipeline
+        this._widgets = [];
+        this._buildErrors ??= {};
+        for (const WidgetClass of WIDGETS) {
+            if (!WidgetClass.isAvailable(deps)) continue;
+            const widget = this._safeBuild(WidgetClass.id, () => new WidgetClass(deps));
+            if (widget) this._widgets.push(widget);
+        }
+
+        // Build non-migrated widgets (will be moved to registry in subsequent slices)
+        this._calendar   = this._safeBuild('calendar',   () => new CalendarWidget());
         this._volume     = this._safeBuild('volume',     () => new VolumeSection({ mixer: this._mixer }));
         this._mic        = this._safeBuild('mic',        () => new MicSection({ mixer: this._mixer }));
         this._brightness = this._safeBuild('brightness', () => new BrightnessSection());
@@ -42,7 +51,9 @@ export class WidgetsPage extends Component {
     }
 
     onSidebarOpen() {
-        this._clock?.start();
+        for (const widget of this._widgets) {
+            widget.onSidebarOpen();
+        }
         if (this._mixer?.get_state() === Gvc.MixerControlState.READY) {
             this._volume?.refresh();
             this._mic?.refresh();
@@ -51,11 +62,15 @@ export class WidgetsPage extends Component {
     }
 
     onSidebarClose() {
-        this._clock?.stop();
+        for (const widget of this._widgets) {
+            widget.onSidebarClose();
+        }
     }
 
     destroy() {
-        this._clock?.destroy();
+        for (const widget of this._widgets) {
+            widget.destroy();
+        }
         this._calendar?.destroy();
         this._volume?.destroy();
         this._mic?.destroy();
@@ -115,9 +130,14 @@ export class WidgetsPage extends Component {
             style_class: 'raven-widgets-content',
         });
 
+        // Registered widgets (in registry order)
+        for (const widget of this._widgets) {
+            content.add_child(widget.actor);
+        }
+
+        // Non-migrated widgets (will be moved to registry in subsequent slices)
         for (const [tag, component] of [
-            ['clock',    this._clock],
-            ['calendar', this._calendar],
+            ['calendar',   this._calendar],
             ['volume',     this._volume],
             ['mic',        this._mic],
             ['brightness', this._brightness],
