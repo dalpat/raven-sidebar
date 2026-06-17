@@ -53,7 +53,7 @@ export class Sidebar extends Component {
     if (this._open) return;
     this._open = true;
 
-    const monitor = Main.layoutManager.primaryMonitor;
+    const monitor = this._getMonitor();
     const panelH = Main.panel.height;
 
     // Re-read monitor geometry on each show — handles monitor changes
@@ -129,8 +129,18 @@ export class Sidebar extends Component {
 
   // --- private ---
 
+  // primaryMonitor can be null early in startup or in a nested
+  // (devkit) shell where no primary is assigned — fall back safely.
+  _getMonitor() {
+    return (
+      Main.layoutManager.primaryMonitor ||
+      Main.layoutManager.monitors[0] ||
+      { x: 0, y: 0, width: 1920, height: 1080 }
+    );
+  }
+
   _buildOverlay() {
-    const monitor = Main.layoutManager.primaryMonitor;
+    const monitor = this._getMonitor();
     this._overlay = new St.Widget({
       reactive: true,
       visible: false,
@@ -150,7 +160,7 @@ export class Sidebar extends Component {
   }
 
   _buildShell() {
-    const monitor = Main.layoutManager.primaryMonitor;
+    const monitor = this._getMonitor();
     const panelH = Main.panel.height;
 
     this._shell = new St.BoxLayout({
