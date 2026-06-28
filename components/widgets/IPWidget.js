@@ -1,6 +1,5 @@
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
-import GLib from 'gi://GLib';
 import { BaseWidget } from '../BaseWidget.js';
 
 export const CSS = `
@@ -35,10 +34,17 @@ export const CSS = `
 }
 `;
 
+// Network addresses, read from the shared NetworkService (NetworkManager) rather
+// than spawning `ip` — no blocking subprocess on the compositor thread.
 export class IPWidget extends BaseWidget {
+    static get section() { return 'Network'; }
+
     constructor(deps) {
         super(deps);
+        this._net = deps?.net ?? null;
         this.actor = this._build();
+        if (this._net) this._unsub = this._net.onChange(() => this.refresh());
+        this.refresh();
     }
 
     onSidebarOpen() {
@@ -46,36 +52,16 @@ export class IPWidget extends BaseWidget {
     }
 
     refresh() {
-        const addrs = this._getAddresses();
-        this._refreshList(addrs);
+        if (!this.actor) return;
+        this._refreshList(this._net?.addresses ?? []);
     }
 
-    _getAddresses() {
-        try {
-            const [ok, stdout] = GLib.spawn_sync(
-                null,
-                ['ip', '-4', 'addr', 'show'],
-                null,
-                GLib.SpawnFlags.SEARCH_PATH,
-                null,
-            );
-            if (!ok || !stdout) return [];
-
-            const text = new TextDecoder().decode(stdout);
-            const addrs = [];
-            for (const line of text.split('\n')) {
-                const m = line.trim().match(/^inet\s+(\d+\.\d+\.\d+\.\d+)/);
-                if (!m) continue;
-                const ip = m[1];
-                if (ip.startsWith('127.')) continue;
-                addrs.push(ip);
-            }
-            return addrs;
-        } catch (e) {
-            console.error('[Raven] IPWidget:', e);
-            return [];
-        }
+    destroy() {
+        try { this._unsub?.(); } catch (_) {}
+        super.destroy();
     }
+
+    // --- private ---
 
     _refreshList(addrs) {
         this._list.destroy_all_children();

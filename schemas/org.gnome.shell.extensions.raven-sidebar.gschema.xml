@@ -28,5 +28,15 @@
       </description>
     </key>
 
+    <key name="habits" type="s">
+      <default>'[]'</default>
+      <summary>Habit tracker data</summary>
+      <description>
+        JSON array of habits for the Habit Tracker widget. Each entry is
+        { "name": string, "history": { "YYYY-MM-DD": true } }. Managed by the
+        widget; not intended to be edited by hand.
+      </description>
+    </key>
+
   </schema>
 </schemalist>

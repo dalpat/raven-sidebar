@@ -102,6 +102,8 @@ export const CSS = `
 `;
 
 export class CalendarWidget extends BaseWidget {
+    static get section() { return 'Calendar'; }
+
     constructor(deps) {
         super(deps);
         this._calDate = GLib.DateTime.new_now_local();

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Raven Sidebar — Widget Catalogue Proposal</title>
+<style>
+  :root{
+    --page-bg:#0e0f13;--fg:#e7e8ec;--muted:#969aa6;
+    --card:#16181f;--card-2:#1d2029;--line:rgba(255,255,255,0.08);
+    --accent:#6c8fff;--accent-2:#a06cff;--ok:#46c98b;--warn:#e6b24a;
+    --font:-apple-system,"Inter","Cantarell","Segoe UI",system-ui,sans-serif;
+    --mono:"SF Mono","JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--font);color:var(--fg);line-height:1.45;-webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1100px 500px at 85% -5%,rgba(108,143,255,0.08),transparent 60%),
+      radial-gradient(900px 500px at 5% 105%,rgba(160,108,255,0.08),transparent 60%),
+      var(--page-bg);
+    padding:30px clamp(16px,4vw,48px) 80px;
+  }
+  .wrap{max-width:1280px;margin:0 auto}
+  .eyebrow{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-size:30px;font-weight:800;letter-spacing:-0.5px;margin:7px 0 8px}
+  .sub{color:var(--muted);max-width:800px;font-size:15px}
+  .legend{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--muted)}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .pill.low{background:rgba(70,201,139,0.16);color:var(--ok)}
+  .pill.med{background:rgba(230,178,74,0.16);color:var(--warn)}
+  .pill.high{background:rgba(160,108,255,0.18);color:var(--accent-2)}
+  .pill.build{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}
+
+  h2.section{margin:40px 0 4px;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px}
+  h2.section .rule{flex:1;height:1px;background:var(--line)}
+  .section-note{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+  /* desktop wallpaper frame so Glass translucency reads */
+  .frame{
+    border-radius:16px;padding:16px;overflow:hidden;
+    background:linear-gradient(150deg,#2a3d6b 0%,#5a3a78 48%,#813a5c 100%);
+    box-shadow:0 16px 40px -24px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.06);
+  }
+  .w{
+    background:rgba(28,24,42,0.55);backdrop-filter:blur(28px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 15px;color:#fff;
+  }
+  .lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,0.4);margin-bottom:9px}
+  .row{display:flex;align-items:center;gap:11px}
+  .ico{width:18px;height:18px;flex:none;opacity:0.85}
+  .grow{flex:1}
+
+  /* two selected, big */
+  .selgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px}
+  @media (max-width:980px){.selgrid{grid-template-columns:1fr;max-width:520px}}
+  .cell-head{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+  .cell-head .n{font-size:18px;font-weight:700}
+  .cell-head .pill{margin-left:auto}
+  .notes{margin-top:13px}
+  .notes p{color:var(--muted);font-size:13px}.notes p+p{margin-top:7px}
+  .notes .k{color:var(--fg);font-weight:600}
+  .notes code{font-family:var(--mono);font-size:11px;color:var(--fg)}
+  .sysline{margin-top:11px;font-size:12px;display:flex;align-items:center;gap:8px;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 11px}
+  .sysline code{font-family:var(--mono);font-size:11px;color:var(--fg)}
+
+  /* gallery */
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px}
+  .gcell{display:flex;flex-direction:column}
+  .gcap{display:flex;align-items:center;gap:8px;margin:11px 2px 0}
+  .gcap .gt{font-size:14.5px;font-weight:700}
+  .gcap .pill{margin-left:auto}
+  .gapi{margin:5px 2px 0;font-size:11.5px;color:var(--muted)}
+  .gapi code{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.78)}
+
+  /* ── Now Playing ── */
+  .np{display:flex;gap:13px}
+  .np .art{width:58px;height:58px;border-radius:10px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#7d5be6,#e0518a)}
+  .np .art svg{width:22px;height:22px;opacity:0.9}
+  .np .meta{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .np .title{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .np .artist{font-size:12px;color:rgba(255,255,255,0.55)}
+  .np-bar{margin-top:10px;height:4px;border-radius:999px;background:rgba(255,255,255,0.18);position:relative}
+  .np-bar i{position:absolute;inset:0 auto 0 0;width:42%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .np-bar b{position:absolute;left:42%;top:50%;width:11px;height:11px;border-radius:50%;background:#fff;transform:translate(-50%,-50%)}
+  .np-times{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.5);margin-top:5px;font-variant-numeric:tabular-nums}
+  .np-ctrl{display:flex;justify-content:center;gap:22px;margin-top:9px}
+  .np-ctrl button{background:none;border:0;color:#fff;cursor:pointer;opacity:0.9;padding:2px}
+  .np-ctrl button.play{background:rgba(255,255,255,0.14);border-radius:50%;width:32px;height:32px;display:grid;place-items:center}
+  .np-ctrl svg{width:17px;height:17px;display:block}
+
+  /* ── Power ── */
+  .bat-big{font-size:28px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+  .bat-sub{font-size:12px;color:rgba(255,255,255,0.55)}
+  .seg{margin-top:12px;display:flex;background:rgba(255,255,255,0.06);border-radius:10px;padding:3px;gap:2px}
+  .seg span{flex:1;text-align:center;font-size:11px;font-weight:600;padding:7px 0;border-radius:8px;color:rgba(255,255,255,0.55)}
+  .seg span.on{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
+
+  /* ── shared mock helpers ── */
+  .mrow{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:12px}
+  .mrow+.mrow{border-top:1px solid rgba(255,255,255,0.06)}
+  .mrow .mi{width:15px;height:15px;opacity:0.8;flex:none}
+  .mrow .ml{flex:1;color:rgba(255,255,255,0.84)}
+  .mrow .mv{font-variant-numeric:tabular-nums;color:rgba(255,255,255,0.62);font-size:11px}
+  .acc{color:#9fb4ff}
+  .mbar{height:6px;border-radius:999px;background:rgba(255,255,255,0.16);position:relative;overflow:hidden;flex:1}
+  .mbar i{position:absolute;inset:0 auto 0 0;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .msl{height:5px;border-radius:999px;background:rgba(255,255,255,0.16);position:relative;margin-top:5px}
+  .msl i{position:absolute;inset:0 auto 0 0;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .msl b{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,-50%)}
+  .mbtns{display:flex;gap:6px;margin-top:10px}
+  .mbtns span{flex:1;text-align:center;font-size:11px;font-weight:600;padding:7px 0;border-radius:8px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.85)}
+  .mbtns span.acc2{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
+  .mbig{font-size:25px;font-weight:800;letter-spacing:-0.5px;font-variant-numeric:tabular-nums}
+  .mchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+  .mchip{font-size:11px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.82)}
+  .mchip.on{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
+  .mswatch{display:flex;gap:6px;margin-top:9px}
+  .mswatch i{width:24px;height:24px;border-radius:7px;border:1px solid rgba(255,255,255,0.18)}
+  .mtg{width:36px;height:20px;border-radius:999px;position:relative;flex:none;display:inline-block}
+  .mtg i{position:absolute;top:3px;width:14px;height:14px;border-radius:50%;background:#fff}
+  .mtg.on{background:linear-gradient(135deg,var(--accent),var(--accent-2))}.mtg.on i{right:3px}
+  .mtg.off{background:rgba(255,255,255,0.18)}.mtg.off i{left:3px}
+  .mspark{width:100%;height:30px;display:block}
+  .mdots{display:flex;gap:5px;margin-top:7px}
+  .mdots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.25)}
+  .mdots i.on{background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+  .mkv{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
+  .mkv .v{font-variant-numeric:tabular-nums;color:rgba(255,255,255,0.6)}
+  .mcheck{display:flex;align-items:center;gap:9px;font-size:12px;padding:5px 0}
+  .mcheck .box{width:15px;height:15px;border-radius:5px;border:1.5px solid rgba(255,255,255,0.35);flex:none}
+  .mcheck.done .box{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent}
+  .mcheck.done .t{color:rgba(255,255,255,0.4);text-decoration:line-through}
+  .signal{display:inline-flex;align-items:flex-end;gap:2px;height:13px}
+  .signal i{width:3px;background:rgba(255,255,255,0.8);border-radius:1px}
+
+  footer{margin:44px 0 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:20px}
+  footer code{background:var(--card-2);padding:2px 6px;border-radius:5px;color:var(--fg);font-family:var(--mono);font-size:11.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Raven Sidebar · Widget Catalogue</div>
+  <h1>Widget catalogue — 2 selected + 25 more concepts</h1>
+  <p class="sub">Now Playing and Power &amp; Battery are locked in to build. Below them is a catalogue of 25 further widget concepts, each mocked in the Glass style with its backing API and a build-effort grade, so you can queue what comes next.</p>
+  <div class="legend">
+    <span><span class="pill build">BUILDING</span> selected</span>
+    <span><span class="pill low">LOW</span> small / low-risk</span>
+    <span><span class="pill med">MEDIUM</span> real D-Bus / sampling</span>
+    <span><span class="pill high">HIGHER</span> heavier integration</span>
+    <span><span class="dot ok"></span> backend verified on this machine</span>
+  </div>
+
+  <!-- ───────────── SELECTED ───────────── -->
+  <h2 class="section">Selected to build <span class="rule"></span></h2>
+  <div class="selgrid">
+
+    <div class="gcell">
+      <div class="cell-head"><div class="n">Now Playing</div><span class="pill build">BUILDING</span></div>
+      <div class="frame"><div class="w">
+        <div class="lbl">Now Playing</div>
+        <div class="np">
+          <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+          <div class="meta">
+            <div class="title">Midnight City</div>
+            <div class="artist">M83 — Hurry Up, We're Dreaming</div>
+            <div class="np-bar"><i></i><b></b></div>
+            <div class="np-times"><span>1:42</span><span>4:03</span></div>
+          </div>
+        </div>
+        <div class="np-ctrl">
+          <button><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg></button>
+          <button class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
+          <button><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg></button>
+        </div>
+      </div></div>
+      <div class="notes">
+        <p><span class="k">What:</span> album art, track, scrubber and transport controls for whatever's playing.</p>
+        <p><span class="k">Powered by:</span> MPRIS2 D-Bus (<code>org.mpris.MediaPlayer2.Player</code>) via <code>Gio.DBusProxy</code>.</p>
+        <div class="sysline"><span class="dot ok"></span> Live player detected on your bus: <code>org.mpris.MediaPlayer2.chromium</code></div>
+      </div>
+    </div>
+
+    <div class="gcell">
+      <div class="cell-head"><div class="n">Power &amp; Battery</div><span class="pill build">BUILDING</span></div>
+      <div class="frame"><div class="w">
+        <div class="row" style="margin-bottom:6px">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/><rect x="4" y="9" width="11" height="6" rx="1" fill="#fff" stroke="none"/></svg>
+          <span class="grow" style="font-size:13px;color:rgba(255,255,255,0.82)">Battery</span>
+          <span class="bat-big">82%</span>
+        </div>
+        <div class="bat-sub">3 h 40 m remaining · discharging</div>
+        <div class="seg"><span>Saver</span><span class="on">Balanced</span><span>Performance</span></div>
+      </div></div>
+      <div class="notes">
+        <p><span class="k">What:</span> charge %, time-to-empty/full, and a power-profile switch.</p>
+        <p><span class="k">Powered by:</span> <code>UPowerGlib</code> + <code>PowerProfiles</code> D-Bus.</p>
+        <div class="sysline"><span class="dot ok"></span> Battery present &nbsp;·&nbsp; <span class="dot warn"></span> ppd masked → profile switch hides until enabled</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ───────────── 25 MORE ───────────── -->
+  <h2 class="section">25 more concepts <span class="rule"></span></h2>
+  <p class="section-note">Grouped by theme. Each is a real, buildable Raven widget that slots into the existing registry. Effort + backend per card.</p>
+  <div id="gallery"></div>
+
+  <footer>
+    Mockup only — proposal, not built. Effort grades and the “verified” markers were probed live on this machine (GNOME&nbsp;50.1).
+    Building first: <code>Now Playing</code> + <code>Power &amp; Battery</code>. Tell me which of the 25 to queue next.
+  </footer>
+</div>
+
+<script>
+const I = {
+  bt:'<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg>',
+  spk:'<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 010 7"/></svg>',
+  hp:'<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="2" y="14" width="5" height="7" rx="1.5"/><rect x="17" y="14" width="5" height="7" rx="1.5"/></svg>',
+  app:'<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+  disk:'<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg>',
+};
+const spark=(c,pts)=>`<svg class="mspark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline fill="none" stroke="${c}" stroke-width="2" points="${pts}"/></svg>`;
+const sig=(n)=>{let s='<span class="signal">';for(let i=1;i<=4;i++)s+=`<i style="height:${i*3+2}px;opacity:${i<=n?1:0.25}"></i>`;return s+'</span>';};
+
+const GALLERY = [
+ // ── Media & Audio ──
+ {cat:'Media & Audio',t:'Audio Output',eff:'MEDIUM',cls:'med',api:'<code>Gvc</code> sinks',ok:1,html:`
+   <div class="lbl">Audio Output</div>
+   <div class="mrow">${I.spk}<span class="ml">Built-in Speakers</span><span class="mv acc">●</span></div>
+   <div class="mrow">${I.hp}<span class="ml">Sony WH-1000XM5</span><span class="mv" style="opacity:.4">○</span></div>
+   <div class="mrow">${I.spk}<span class="ml">HDMI / TV</span><span class="mv" style="opacity:.4">○</span></div>`},
+
+ {cat:'Media & Audio',t:'App Volume Mixer',eff:'MEDIUM',cls:'med',api:'<code>Gvc</code> streams',ok:1,html:`
+   <div class="lbl">App Mixer</div>
+   <div style="font-size:12px;color:rgba(255,255,255,.84)">Spotify <span style="float:right;opacity:.6">72%</span><div class="msl"><i style="width:72%"></i><b style="left:72%"></b></div></div>
+   <div style="font-size:12px;color:rgba(255,255,255,.84);margin-top:9px">Firefox <span style="float:right;opacity:.6">45%</span><div class="msl"><i style="width:45%"></i><b style="left:45%"></b></div></div>`},
+
+ {cat:'Media & Audio',t:'Microphone Meter',eff:'MEDIUM',cls:'med',api:'<code>Gvc</code> source',ok:1,html:`
+   <div class="lbl">Microphone</div>
+   <div class="row"><span class="grow" style="font-size:12px;color:rgba(255,255,255,.84)">Input level</span><span class="mtg on"><i></i></span></div>
+   <div class="mbar" style="margin-top:10px;width:100%"><i style="width:58%"></i></div>
+   <div class="bat-sub" style="margin-top:7px">Yeti Nano · −12 dB</div>`},
+
+ // ── System & Hardware ──
+ {cat:'System & Hardware',t:'Bluetooth Devices',eff:'MEDIUM',cls:'med',api:'<code>GnomeBluetooth-3.0</code>',ok:1,html:`
+   <div class="lbl">Bluetooth</div>
+   <div class="mrow">${I.hp}<span class="ml">WH-1000XM5</span><span class="mv">85%</span></div>
+   <div class="mrow">${I.bt}<span class="ml">MX Master 3</span><span class="mv acc">connected</span></div>
+   <div class="mrow">${I.bt}<span class="ml">Keychron K2</span><span class="mv" style="opacity:.5">paired</span></div>`},
+
+ {cat:'System & Hardware',t:'CPU Temp & Fans',eff:'MEDIUM',cls:'med',api:'<code>/sys/class/hwmon</code>',ok:1,html:`
+   <div class="lbl">Thermals</div>
+   <div class="mkv"><span>CPU</span><span class="v">58 °C</span></div>
+   <div class="mbar" style="width:100%"><i style="width:58%"></i></div>
+   <div class="mkv" style="margin-top:9px"><span>Fan</span><span class="v">2 400 RPM</span></div>
+   <div class="mkv"><span>GPU</span><span class="v">47 °C</span></div>`},
+
+ {cat:'System & Hardware',t:'Disk Usage',eff:'LOW–MED',cls:'low',api:'<code>GLib</code> statvfs',ok:1,html:`
+   <div class="lbl">Storage</div>
+   <div class="mkv"><span>/</span><span class="v">186 / 512 GB</span></div>
+   <div class="mbar" style="width:100%"><i style="width:36%"></i></div>
+   <div class="mkv" style="margin-top:9px"><span>/home</span><span class="v">820 GB / 2 TB</span></div>
+   <div class="mbar" style="width:100%"><i style="width:41%"></i></div>`},
+
+ {cat:'System & Hardware',t:'Bandwidth Meter',eff:'LOW–MED',cls:'low',api:'<code>/proc/net/dev</code>',ok:1,html:`
+   <div class="lbl">Bandwidth</div>
+   <div class="row"><span class="mbig">12.4</span><span style="font-size:11px;color:rgba(255,255,255,.5);margin-left:4px">MB/s ↓</span><span class="grow"></span><span style="font-size:13px;color:rgba(255,255,255,.7)">1.2 ↑</span></div>
+   ${spark('#46c98b','0,24 14,8 28,20 42,6 56,18 70,4 84,20 100,12')}`},
+
+ {cat:'System & Hardware',t:'Top Processes',eff:'MEDIUM',cls:'med',api:'<code>/proc</code>',ok:1,html:`
+   <div class="lbl">Top by CPU</div>
+   <div class="mrow">${I.app}<span class="ml">chromium</span><span class="mv">41%</span></div>
+   <div class="mrow">${I.app}<span class="ml">gnome-shell</span><span class="mv">12%</span></div>
+   <div class="mrow">${I.app}<span class="ml">node</span><span class="mv">8%</span></div>`},
+
+ {cat:'System & Hardware',t:'Battery Health',eff:'LOW',cls:'low',api:'<code>UPowerGlib</code>',ok:1,html:`
+   <div class="lbl">Battery Health</div>
+   <div class="row"><span class="mbig">94%</span><span style="font-size:11px;color:rgba(255,255,255,.5);margin-left:6px">of design capacity</span></div>
+   <div class="mkv" style="margin-top:6px"><span>Cycles</span><span class="v">214</span></div>
+   <div class="mkv"><span>Capacity</span><span class="v">47.1 / 50.0 Wh</span></div>`},
+
+ // ── Time & Calendar ──
+ {cat:'Time & Calendar',t:'World Clocks',eff:'LOW',cls:'low',api:'<code>GLib.TimeZone</code>',ok:1,html:`
+   <div class="lbl">World Clocks</div>
+   <div class="mrow"><span class="ml">San Francisco</span><span class="mv">2:47 PM</span></div>
+   <div class="mrow"><span class="ml">London</span><span class="mv">10:47 PM</span></div>
+   <div class="mrow"><span class="ml">Tokyo</span><span class="mv">6:47 AM</span></div>`},
+
+ {cat:'Time & Calendar',t:'Upcoming Agenda',eff:'HIGHER',cls:'high',api:'Evolution Data Server',ok:0,html:`
+   <div class="lbl">Today</div>
+   <div class="mrow"><span style="width:3px;height:26px;border-radius:2px;background:#6c8fff;flex:none"></span><span class="ml">Standup<br><span style="font-size:10.5px;opacity:.55">10:00 – 10:15</span></span></div>
+   <div class="mrow"><span style="width:3px;height:26px;border-radius:2px;background:#e0518a;flex:none"></span><span class="ml">Design review<br><span style="font-size:10.5px;opacity:.55">2:00 – 3:00</span></span></div>`},
+
+ {cat:'Time & Calendar',t:'Event Countdown',eff:'MEDIUM',cls:'med',api:'Evolution Data Server',ok:0,html:`
+   <div class="lbl">Next Event</div>
+   <div class="mbig" style="font-size:30px">14:32</div>
+   <div class="bat-sub" style="margin-top:4px">until <b style="color:rgba(255,255,255,.85)">Standup</b> · 10:00</div>`},
+
+ {cat:'Time & Calendar',t:'Sun & Moon',eff:'LOW–MED',cls:'low',api:'compute / <code>GWeather</code>',ok:1,html:`
+   <div class="lbl">Sun &amp; Moon</div>
+   <div class="mkv"><span>☀ Sunrise</span><span class="v">6:42 AM</span></div>
+   <div class="mkv"><span>🌇 Sunset</span><span class="v">8:11 PM</span></div>
+   <div class="mkv"><span>🌖 Moon</span><span class="v">Waning Gibbous</span></div>`},
+
+ // ── Productivity ──
+ {cat:'Productivity',t:'To-Do / Tasks',eff:'MEDIUM',cls:'med',api:'EDS tasks / file',ok:0,html:`
+   <div class="lbl">Tasks</div>
+   <div class="mcheck done"><span class="box"></span><span class="t">Ship Glass build</span></div>
+   <div class="mcheck"><span class="box"></span><span class="t">Wire Now Playing</span></div>
+   <div class="mcheck"><span class="box"></span><span class="t">Review PR #12</span></div>`},
+
+ {cat:'Productivity',t:'Quick Notes',eff:'LOW',cls:'low',api:'<code>St.Entry</code> + GSettings',ok:1,html:`
+   <div class="lbl">Notes</div>
+   <div style="background:rgba(255,255,255,.06);border-radius:9px;padding:11px;font-size:12px;color:rgba(255,255,255,.8);line-height:1.5;min-height:64px">Pick widgets for next sprint.<br>Ask about EDS perms.<span style="opacity:.5">▍</span></div>`},
+
+ {cat:'Productivity',t:'Clipboard History',eff:'MEDIUM',cls:'med',api:'<code>St.Clipboard</code>',ok:1,html:`
+   <div class="lbl">Clipboard</div>
+   <div class="mrow"><span class="ml" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">https://gjs.guide/extensions</span></div>
+   <div class="mrow"><span class="ml" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">git rebase -i HEAD~3</span></div>
+   <div class="mrow"><span class="ml" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">raven-sidebar@dalpat…</span></div>`},
+
+ {cat:'Productivity',t:'Habit Tracker',eff:'LOW',cls:'low',api:'GSettings',ok:1,html:`
+   <div class="lbl">Habits</div>
+   <div class="mrow"><span class="ml">Read</span><span class="mdots" style="margin:0"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+   <div class="mrow"><span class="ml">Exercise</span><span class="mdots" style="margin:0"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>`},
+
+ {cat:'Productivity',t:'Calculator',eff:'LOW',cls:'low',api:'pure JS',ok:1,html:`
+   <div class="lbl">Calculator</div>
+   <div style="text-align:right;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums">1,248 ÷ 4</div>
+   <div style="text-align:right;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums">= 312</div>
+   <div class="mchips"><span class="mchip">7</span><span class="mchip">8</span><span class="mchip">9</span><span class="mchip on">÷</span></div>`},
+
+ // ── Network ──
+ {cat:'Network',t:'VPN Toggle',eff:'MEDIUM',cls:'med',api:'<code>NM</code> VPN connections',ok:1,html:`
+   <div class="lbl">VPN</div>
+   <div class="row"><span class="grow" style="font-size:12.5px;color:rgba(255,255,255,.85)">Mullvad · SE-got</span><span class="mtg on"><i></i></span></div>
+   <div class="bat-sub" style="margin-top:8px">Connected · 10.64.0.2</div>`},
+
+ {cat:'Network',t:'Wi-Fi Networks',eff:'MEDIUM',cls:'med',api:'<code>NM</code> scan',ok:1,html:`
+   <div class="lbl">Wi-Fi</div>
+   <div class="mrow"><span class="ml acc">HomeNet</span><span class="mv">${sig(4)}</span></div>
+   <div class="mrow"><span class="ml">Cafe-Guest</span><span class="mv">${sig(2)}</span></div>
+   <div class="mrow"><span class="ml">TP-Link_5G</span><span class="mv">${sig(3)}</span></div>`},
+
+ {cat:'Network',t:'Speed Test',eff:'HIGHER',cls:'high',api:'external endpoint',ok:0,html:`
+   <div class="lbl">Speed Test</div>
+   <div class="mkv"><span>Download</span><span class="v" style="color:#9fb4ff">486 Mbps</span></div>
+   <div class="mkv"><span>Upload</span><span class="v" style="color:#9fb4ff">42 Mbps</span></div>
+   <div class="mkv"><span>Ping</span><span class="v">11 ms</span></div>
+   <div class="mbtns"><span class="acc2">Run test</span></div>`},
+
+ // ── Utilities ──
+ {cat:'Utilities',t:'Color Picker',eff:'LOW',cls:'low',api:'<code>Shell</code> pick-color',ok:1,html:`
+   <div class="lbl">Color Picker</div>
+   <div class="row"><span class="mbig" style="font-size:16px;font-family:var(--mono)">#6C8FFF</span><span class="grow"></span><span style="width:30px;height:30px;border-radius:8px;background:#6c8fff;border:1px solid rgba(255,255,255,.2)"></span></div>
+   <div class="mswatch"><i style="background:#e0518a"></i><i style="background:#46c98b"></i><i style="background:#e6b24a"></i><i style="background:#a06cff"></i></div>`},
+
+ {cat:'Utilities',t:'Screenshot & Record',eff:'LOW–MED',cls:'low',api:'<code>Shell.Screenshot</code>',ok:1,html:`
+   <div class="lbl">Capture</div>
+   <div class="mchips"><span class="mchip">Area</span><span class="mchip">Window</span><span class="mchip">Screen</span></div>
+   <div class="mbtns" style="margin-top:9px"><span class="acc2">● Record screen</span></div>`},
+
+ {cat:'Utilities',t:'Unit Converter',eff:'LOW',cls:'low',api:'pure JS',ok:1,html:`
+   <div class="lbl">Convert</div>
+   <div class="mkv"><span style="color:rgba(255,255,255,.85)">100 USD</span><span class="v">→</span><span class="v" style="color:#9fb4ff">92.4 EUR</span></div>
+   <div class="mkv"><span style="color:rgba(255,255,255,.85)">5 mi</span><span class="v">→</span><span class="v" style="color:#9fb4ff">8.05 km</span></div>`},
+
+ {cat:'Utilities',t:'Wallpaper Switcher',eff:'LOW–MED',cls:'low',api:'background GSettings',ok:1,html:`
+   <div class="lbl">Wallpaper</div>
+   <div class="mswatch"><i style="width:44px;height:30px;background:linear-gradient(135deg,#2a3d6b,#813a5c)"></i><i style="width:44px;height:30px;background:linear-gradient(135deg,#1b6e5a,#0d3b3b)"></i><i style="width:44px;height:30px;background:linear-gradient(135deg,#6e4a1b,#3b2a0d)"></i></div>
+   <div class="mbtns"><span>Shuffle</span><span class="acc2">Set</span></div>`},
+];
+
+// group by category, render
+const byCat = {};
+for (const g of GALLERY) (byCat[g.cat] ||= []).push(g);
+let html = '';
+for (const cat of Object.keys(byCat)) {
+  html += `<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-weight:700;margin:22px 2px 12px">${cat}</div><div class="gallery">`;
+  for (const g of byCat[cat]) {
+    html += `<div class="gcell">
+      <div class="frame"><div class="w">${g.html}</div></div>
+      <div class="gcap"><span class="gt">${g.t}</span><span class="pill ${g.cls}">${g.eff}</span></div>
+      <div class="gapi">${g.ok?'<span class="dot ok" style="margin-right:5px"></span>':''}${g.api}</div>
+    </div>`;
+  }
+  html += `</div>`;
+}
+document.getElementById('gallery').innerHTML = html;
+</script>
+</body>
+</html>

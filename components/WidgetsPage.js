@@ -10,6 +10,13 @@ export const CSS = `
     padding: 16px;
     spacing: 12px;
 }
+.raven-section-label {
+    font-size: 7.5pt;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.34);
+    margin-top: 2px;
+}
 .raven-error-label {
     color: #ff4444;
     background: rgba(255,0,0,0.15);
@@ -20,10 +27,11 @@ export const CSS = `
 `;
 
 export class WidgetsPage extends Component {
-    constructor() {
+    constructor({ net, power, settings } = {}) {
         super();
+        this._net   = net ?? null;
         this._mixer = this._createMixer();
-        const deps = { mixer: this._mixer };
+        const deps  = { mixer: this._mixer, net: this._net, power: power ?? null, settings: settings ?? null };
 
         this._widgets = [];
         this._errorActors = [];
@@ -42,6 +50,8 @@ export class WidgetsPage extends Component {
                 this._errorActors.push(this._errorLabel(tag));
                 continue;
             }
+            // Optional labelled group that starts before this widget.
+            widget.__section = WidgetClass.section ?? null;
             this._widgets.push(widget);
         }
 
@@ -117,6 +127,7 @@ export class WidgetsPage extends Component {
         });
 
         for (const widget of this._widgets) {
+            if (widget.__section) content.add_child(this._sectionLabel(widget.__section));
             content.add_child(widget.actor);
         }
         for (const errorActor of this._errorActors) {
@@ -125,5 +136,12 @@ export class WidgetsPage extends Component {
 
         scroll.add_child(content);
         return scroll;
+    }
+
+    _sectionLabel(text) {
+        return new St.Label({
+            text:        text.toUpperCase(),
+            style_class: 'raven-section-label',
+        });
     }
 }

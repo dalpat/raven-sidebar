@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark" data-tab="widgets">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Raven Sidebar — UI Revamp Proposal</title>
+<style>
+  /* ─────────────────────────────────────────────────────────────────────────
+     RAVEN SIDEBAR — UI REVAMP PROPOSAL
+     Three complete directions, shown full-height side by side for comparison.
+     ───────────────────────────────────────────────────────────────────────── */
+  :root {
+    --page-bg: #0e0f13;
+    --fg: #e7e8ec;
+    --muted: #969aa6;
+    --card: #16181f;
+    --card-2: #1d2029;
+    --line: rgba(255,255,255,0.08);
+    --accent: #6c8fff;
+    --accent-2: #a06cff;
+    --font: -apple-system, "Inter", "Cantarell", "Segoe UI", system-ui, sans-serif;
+    --mono: "SF Mono", "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font); color: var(--fg);
+    background:
+      radial-gradient(1100px 500px at 85% -5%, rgba(108,143,255,0.08), transparent 60%),
+      radial-gradient(900px 500px at 5% 105%, rgba(160,108,255,0.08), transparent 60%),
+      var(--page-bg);
+    -webkit-font-smoothing: antialiased; line-height: 1.45;
+    padding: 30px clamp(16px, 4vw, 48px) 80px;
+  }
+
+  /* ── Header ──────────────────────────────────────────────────────────────*/
+  .head { max-width: 1240px; margin: 0 auto; }
+  .eyebrow { font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin: 7px 0 8px; }
+  .head .sub { color: var(--muted); max-width: 760px; font-size: 15px; }
+
+  /* sticky control bar */
+  .controls {
+    position: sticky; top: 0; z-index: 30; max-width: 1240px; margin: 22px auto 0;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    padding: 12px 14px; border-radius: 14px;
+    background: rgba(16,18,24,0.82); backdrop-filter: blur(14px);
+    border: 1px solid var(--line);
+  }
+  .seg { display: inline-flex; background: var(--card-2); border: 1px solid var(--line); border-radius: 11px; padding: 4px; gap: 2px; }
+  .seg button { font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); background: transparent; border: 0; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: 140ms; }
+  .seg button:hover { color: var(--fg); }
+  .seg button.on { background: var(--accent); color: #fff; }
+  .seg.ghost button.on { background: var(--card); color: var(--fg); }
+  .ctl-label { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-right: 2px; }
+  .spacer { flex: 1; }
+
+  /* ── Comparison grid ──────────────────────────────────────────────────────*/
+  .grid { max-width: 1240px; margin: 26px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; align-items: start; }
+  @media (max-width: 1080px) { .grid { grid-template-columns: 1fr; max-width: 460px; } }
+
+  .col-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .badge { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #fff; flex: none; }
+  .col:nth-child(1) .badge { background: linear-gradient(135deg, #5b76e6, #8a6ce6); }
+  .col:nth-child(2) .badge { background: linear-gradient(135deg, #7896ff, #b478ff); }
+  .col:nth-child(3) .badge { background: linear-gradient(135deg, #3a3f52, #5a5f72); }
+  .col-head .name { font-size: 17px; font-weight: 700; line-height: 1.1; }
+  .col-head .name small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 2px; }
+  .tag { margin-left: auto; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 999px; background: rgba(108,143,255,0.16); color: var(--accent); white-space: nowrap; }
+
+  /* desktop frame — wallpaper backdrop so Glass translucency reads correctly */
+  .frame {
+    border-radius: 18px; padding: 14px; overflow: hidden;
+    background: linear-gradient(150deg, #2a3d6b 0%, #5a3a78 48%, #813a5c 100%);
+    box-shadow: 0 24px 60px -28px rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.06);
+  }
+  .frame::before { /* faint top panel hint */
+    content: ""; display:block; height: 22px; margin: -14px -14px 12px; border-radius: 18px 18px 0 0;
+    background: rgba(0,0,0,0.4);
+    -webkit-mask: linear-gradient(#000 0 0); /* keep rounded */
+  }
+
+  /* ── Sidebar shell (full height, never clipped) ───────────────────────────*/
+  .sb { border-radius: 14px; color: #fff; font-size: 13px; overflow: hidden; display: flex; flex-direction: column; }
+  .sb-head { padding: 14px 16px 0; }
+  .sb-tabs { display: flex; gap: 6px; }
+  .sb-tab { flex: 1; text-align: center; font-weight: 600; font-size: 12.5px; padding: 8px 0; border-radius: 9px; color: rgba(255,255,255,0.5); }
+  .sb-tab.on { color: #fff; background: rgba(255,255,255,0.12); }
+  .sb-themebar { display: flex; justify-content: flex-end; gap: 4px; padding: 9px 16px 2px; }
+  .chip { font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; color: rgba(255,255,255,0.42); }
+  .chip.on { color: #fff; background: rgba(255,255,255,0.16); }
+  .sb-body { padding: 12px 16px 18px; display: flex; flex-direction: column; gap: 13px; }
+
+  .lbl { font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; color: rgba(255,255,255,0.34); }
+
+  .clock { border-radius: 16px; padding: 20px 22px; background: linear-gradient(145deg, rgba(108,143,255,0.42), rgba(160,108,255,0.34)); }
+  .clock .day { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+  .clock .date { font-size: 18px; font-weight: 700; margin-top: 2px; }
+  .clock .time { font-size: 44px; font-weight: 800; letter-spacing: -1px; line-height: 1.05; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .clock .time small { font-size: 0.42em; font-weight: 700; margin-left: 4px; }
+
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 13px 15px; }
+  .card .row { display: flex; align-items: center; gap: 10px; }
+  .ico { width: 17px; height: 17px; opacity: 0.78; flex: none; }
+  .card .ttl { font-size: 13px; color: rgba(255,255,255,0.84); flex: 1; }
+  .card .val { font-size: 12px; color: rgba(255,255,255,0.5); font-variant-numeric: tabular-nums; }
+  .slider { margin-top: 11px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.18); position: relative; }
+  .slider > i { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+  .slider > b { position: absolute; top: 50%; width: 14px; height: 14px; border-radius: 50%; background: #fff; transform: translate(-50%,-50%); box-shadow: 0 2px 6px rgba(0,0,0,0.45); }
+
+  .cal { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 12px; }
+  .cal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-top .m { font-weight: 700; font-size: 13.5px; }
+  .cal-top .nav { display: flex; gap: 4px; }
+  .cal-top .nav span { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 7px; color: rgba(255,255,255,0.55); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; text-align: center; }
+  .cal-grid .wd { font-size: 10px; color: rgba(255,255,255,0.3); padding: 2px 0; font-weight: 600; }
+  .cal-grid .wd.we { color: rgba(170,185,255,0.5); }
+  .cal-grid .d { font-size: 11.5px; padding: 5px 0; border-radius: 7px; color: rgba(255,255,255,0.72); }
+  .cal-grid .d.we { color: rgba(170,185,255,0.65); }
+  .cal-grid .d.today { background: rgba(108,143,255,0.32); border: 1px solid rgba(140,165,255,0.6); color: #cdd9ff; font-weight: 700; }
+  .cal-grid .d.blank { opacity: 0; }
+
+  .net-ip { margin-top: 8px; display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 12px; }
+  .net-ip .if { opacity: 0.4; font-size: 11px; }
+
+  .toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .toggle { display: flex; align-items: center; gap: 9px; padding: 11px 12px; border-radius: 13px; background: rgba(255,255,255,0.05); border: 1px solid transparent; }
+  .toggle.on { background: linear-gradient(135deg, rgba(108,143,255,0.9), rgba(160,108,255,0.85)); border-color: rgba(255,255,255,0.18); }
+  .toggle .ti { width: 17px; height: 17px; flex: none; }
+  .toggle b { font-size: 12px; font-weight: 600; display: block; }
+  .toggle small { font-size: 10px; opacity: 0.7; }
+
+  .notif-top { display: flex; align-items: center; justify-content: space-between; }
+  .clearall { font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 8px; background: rgba(255,255,255,0.1); }
+  .notif { display: flex; gap: 11px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 11px 12px; }
+  .notif .ni { width: 30px; height: 30px; border-radius: 8px; background: rgba(255,255,255,0.08); display: grid; place-items: center; flex: none; }
+  .notif .ni svg { width: 16px; height: 16px; opacity: 0.85; }
+  .notif .nt { flex: 1; min-width: 0; }
+  .notif .nt b { font-size: 12.5px; font-weight: 600; }
+  .notif .nt p { font-size: 11.5px; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .notif .nx { color: rgba(255,255,255,0.3); flex: none; }
+
+  /* ── per-variant shells ───────────────────────────────────────────────────*/
+  .sb.aurora  { background: #16171d; }
+  .sb.glass   { background: rgba(28,24,42,0.55); backdrop-filter: blur(30px) saturate(160%); border: 1px solid rgba(255,255,255,0.14); }
+  .sb.glass .card, .sb.glass .notif { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); }
+  .sb.compact { background: #101216; }
+  .sb.compact .sb-body { gap: 9px; padding: 10px 13px 16px; }
+  .sb.compact .clock { padding: 13px 15px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+  .sb.compact .clock .time { font-size: 30px; }
+  .sb.compact .clock .day, .sb.compact .clock .date { color: rgba(255,255,255,0.55); }
+  .sb.compact .card { padding: 10px 12px; border-radius: 11px; }
+  .sb.compact .slider { margin-top: 8px; height: 4px; }
+  .sb.compact .toggle { padding: 8px 10px; border-radius: 10px; }
+  .accent-bar { height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+  /* ── LIGHT MODE ───────────────────────────────────────────────────────────*/
+  [data-mode="light"] .sb.aurora  { background: #f3f4f9; color: #1a1c22; }
+  [data-mode="light"] .sb.glass   { background: rgba(246,247,252,0.62); color: #1a1c22; }
+  [data-mode="light"] .sb.compact { background: #eceef4; color: #1a1c22; }
+  [data-mode="light"] .sb-tab { color: rgba(0,0,0,0.45); }
+  [data-mode="light"] .sb-tab.on { color: #000; background: rgba(0,0,0,0.1); }
+  [data-mode="light"] .chip { color: rgba(0,0,0,0.42); }
+  [data-mode="light"] .chip.on { color: #000; background: rgba(0,0,0,0.1); }
+  [data-mode="light"] .lbl { color: rgba(0,0,0,0.4); }
+  [data-mode="light"] .card, [data-mode="light"] .notif { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.07); }
+  [data-mode="light"] .sb.glass .card, [data-mode="light"] .sb.glass .notif { background: rgba(255,255,255,0.5); border-color: rgba(0,0,0,0.06); }
+  [data-mode="light"] .card .ttl, [data-mode="light"] .toggle b, [data-mode="light"] .notif .nt b { color: rgba(0,0,0,0.82); }
+  [data-mode="light"] .card .val, [data-mode="light"] .notif .nt p { color: rgba(0,0,0,0.5); }
+  [data-mode="light"] .slider { background: rgba(0,0,0,0.13); }
+  [data-mode="light"] .cal { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+  [data-mode="light"] .cal-grid .d { color: rgba(0,0,0,0.72); }
+  [data-mode="light"] .cal-grid .wd { color: rgba(0,0,0,0.35); }
+  [data-mode="light"] .toggle { background: rgba(0,0,0,0.05); }
+  [data-mode="light"] .toggle.on { background: linear-gradient(135deg, rgba(108,143,255,0.95), rgba(160,108,255,0.9)); }
+  [data-mode="light"] .toggle.on b, [data-mode="light"] .toggle.on small { color: #fff; }
+  [data-mode="light"] .notif .ni { background: rgba(0,0,0,0.06); }
+  [data-mode="light"] .clearall, [data-mode="light"] .compact .clock { background: rgba(0,0,0,0.08); }
+  [data-mode="light"] .sb.compact .clock { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.07); }
+  [data-mode="light"] .clock { color: #fff; }  /* hero clock keeps gradient + white text */
+
+  /* ── notes under each ─────────────────────────────────────────────────────*/
+  .notes { margin-top: 16px; }
+  .notes p { color: var(--muted); font-size: 13px; }
+  .notes ul { margin: 11px 0 0; padding-left: 17px; color: var(--muted); font-size: 13px; }
+  .notes li { margin: 5px 0; }
+  .notes li b { color: var(--fg); font-weight: 600; }
+  .verdict { margin-top: 12px; font-size: 12.5px; padding: 9px 12px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
+  .verdict b { color: var(--fg); }
+
+  footer { max-width: 1240px; margin: 44px auto 0; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 20px; }
+  footer code { background: var(--card-2); padding: 2px 6px; border-radius: 5px; color: var(--fg); font-family: var(--mono); font-size: 11.5px; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="eyebrow">Raven Sidebar · UI Revamp</div>
+  <h1>Three directions — full sidebars, side by side</h1>
+  <p class="sub">Each direction is rendered complete and to scale on a desktop wallpaper, so you can compare entire designs at once — nothing hidden below a fold. Toggle light/dark and the Widgets/Notifications view from the bar below.</p>
+</div>
+
+<div class="controls">
+  <span class="ctl-label">Theme</span>
+  <div class="seg ghost" id="modeSeg">
+    <button data-m="dark" class="on">🌙 Dark</button>
+    <button data-m="light">☀️ Light</button>
+  </div>
+  <span class="ctl-label" style="margin-left:8px">View</span>
+  <div class="seg" id="tabSeg">
+    <button data-t="widgets" class="on">Widgets</button>
+    <button data-t="notifs">Notifications</button>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<div class="grid">
+  <!-- ① AURORA -->
+  <div class="col">
+    <div class="col-head">
+      <div class="badge">1</div>
+      <div class="name">Aurora<small>Refined dark</small></div>
+      <span class="tag">Safest · fastest</span>
+    </div>
+    <div class="frame"><div class="sb aurora" data-v="aurora"></div></div>
+    <div class="notes">
+      <p>A faithful evolution of today’s sidebar — same layout, unified into one design system: consistent 14px cards, real slider handles, quiet section labels, and the indigo→violet accent used throughout.</p>
+      <ul>
+        <li><b>Lowest build risk</b> — pure CSS refresh, no new widgets or wiring.</li>
+        <li><b>Section grouping</b> gives the stack hierarchy it lacks today.</li>
+        <li>Light mode is a designed state, not a tint.</li>
+      </ul>
+      <div class="verdict"><b>Pick this if</b> you want a clear, low-risk improvement you can ship this week.</div>
+    </div>
+  </div>
+
+  <!-- ② GLASS -->
+  <div class="col">
+    <div class="col-head">
+      <div class="badge">2</div>
+      <div class="name">Glass<small>Control center</small></div>
+      <span class="tag">Most modern</span>
+    </div>
+    <div class="frame"><div class="sb glass" data-v="glass"></div></div>
+    <div class="notes">
+      <p>A translucent, blurred panel floating over the wallpaper, with a quick-toggle grid (Wi-Fi, Bluetooth, DND, Night Light) up top — turning the sidebar into a proper GNOME-style control center.</p>
+      <ul>
+        <li><b>Quick toggles add real functionality</b>, not just styling.</li>
+        <li>Frosted blur matches GNOME’s adaptive aesthetic; highest visual impact.</li>
+        <li><b>More effort:</b> St blur needs a shell backdrop effect, and toggles mean new NM / D-Bus wiring.</li>
+      </ul>
+      <div class="verdict"><b>Pick this if</b> you want the most premium feel and accept extra build work.</div>
+    </div>
+  </div>
+
+  <!-- ③ COMPACT -->
+  <div class="col">
+    <div class="col-head">
+      <div class="badge">3</div>
+      <div class="name">Compact<small>Information dense</small></div>
+      <span class="tag">Power users</span>
+    </div>
+    <div class="frame"><div class="sb compact" data-v="compact"></div></div>
+    <div class="notes">
+      <p>Narrower and tighter: a smaller clock, condensed rows, a 2-column toggle grid and slim sliders — everything visible at a glance with minimal scrolling. Monochrome with a single accent stripe.</p>
+      <ul>
+        <li><b>Most data per pixel</b>, least scrolling, smaller screen footprint.</li>
+        <li>Toggle grid + slim controls keep it dense but legible.</li>
+        <li>Trade-off: less breathing room; the clock is no longer a hero.</li>
+      </ul>
+      <div class="verdict"><b>Pick this if</b> you live in the sidebar and value density over flourish.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Mockup only — not the live extension. Open in a browser; use the bar above to switch theme and view.
+  Deep links: <code>#light</code>, <code>#notifs</code>, <code>#light,notifs</code>.
+  All three reuse the existing widget set (clock, calendar, volume, mic, brightness, network, notifications) and differ only in layout &amp; styling.
+</footer>
+
+<script>
+/* Inline SVG icons (stroke = currentColor) */
+const I = {
+  vol:  '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/></svg>',
+  mic:  '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v4"/></svg>',
+  brt:  '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></svg>',
+  net:  '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8.5a16 16 0 0120 0M5 12a11 11 0 0114 0M8.5 15.5a6 6 0 017 0M12 19h.01"/></svg>',
+  wifi: '<svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8.5a16 16 0 0120 0M5 12a11 11 0 0114 0M8.5 15.5a6 6 0 017 0M12 19h.01"/></svg>',
+  bt:   '<svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg>',
+  dnd:  '<svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>',
+  moon: '<svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>',
+  x:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+};
+
+/* Shared fragments */
+const clock = `<div class="clock"><div class="day">Saturday</div><div class="date">June 28</div><div class="time">2:47<small>PM</small></div></div>`;
+const slider = (icon, name, v) => `<div class="card"><div class="row">${icon}<span class="ttl">${name}</span><span class="val">${v}%</span></div><div class="slider"><i style="width:${v}%"></i><b style="left:${v}%"></b></div></div>`;
+const net = `<div class="card"><div class="row">${I.net}<span class="ttl">Network</span></div><div class="net-ip"><span>192.168.1.42</span><span class="if">wlan0</span></div></div>`;
+const toggle = (i,n,s,on) => `<div class="toggle${on?' on':''}">${i}<div><b>${n}</b><small>${s}</small></div></div>`;
+const toggles = `<div class="toggles">${toggle(I.wifi,'Wi-Fi','HomeNet',true)}${toggle(I.bt,'Bluetooth','On',true)}${toggle(I.dnd,'Do Not Disturb','Off',false)}${toggle(I.moon,'Night Light','Off',false)}</div>`;
+
+const cal = (() => {
+  const wd = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let c = wd.map((d,i)=>`<div class="wd${i===0||i===6?' we':''}">${d}</div>`).join('');
+  const offset = 1, days = 30, today = 28;            // June 2026
+  for (let i=0;i<offset;i++) c += `<div class="d blank"></div>`;
+  for (let day=1; day<=days; day++){
+    const dow=(offset+day-1)%7, we=dow===0||dow===6;
+    c += `<div class="d ${day===today?'today':(we?'we':'')}">${day}</div>`;
+  }
+  return `<div class="cal"><div class="cal-top"><div class="m">June 2026</div><div class="nav"><span>‹</span><span>›</span></div></div><div class="cal-grid">${c}</div></div>`;
+})();
+
+const notifList = `
+  <div class="notif-top"><span class="lbl">Notifications · 3</span><span class="clearall">Clear all</span></div>
+  <div class="notif"><div class="ni">${I.chat}</div><div class="nt"><b>Signal · Priya</b><p>Are we still on for tomorrow at 6?</p></div><span class="nx">${I.x}</span></div>
+  <div class="notif"><div class="ni">${I.mail}</div><div class="nt"><b>Mail</b><p>Invoice #4821 — payment received</p></div><span class="nx">${I.x}</span></div>
+  <div class="notif"><div class="ni">${I.bell}</div><div class="nt"><b>Calendar</b><p>Standup in 15 minutes</p></div><span class="nx">${I.x}</span></div>`;
+
+/* Per-variant widget bodies */
+function widgets(v){
+  if (v==='glass') return `${clock}<span class="lbl">Quick Toggles</span>${toggles}<span class="lbl">Audio &amp; Display</span>${slider(I.vol,'Volume',65)}${slider(I.mic,'Microphone',40)}${slider(I.brt,'Brightness',80)}<span class="lbl">Calendar</span>${cal}${net}`;
+  if (v==='compact') return `<div class="accent-bar"></div>${clock}${toggles}${slider(I.vol,'Volume',65)}${slider(I.mic,'Mic',40)}${slider(I.brt,'Brightness',80)}${net}${cal}`;
+  return `${clock}<span class="lbl">Controls</span>${slider(I.vol,'Volume',65)}${slider(I.mic,'Microphone',40)}${slider(I.brt,'Brightness',80)}<span class="lbl">Calendar</span>${cal}<span class="lbl">Network</span>${net}`;
+}
+
+function render(){
+  const mode = document.documentElement.getAttribute('data-mode');
+  const tab  = document.documentElement.getAttribute('data-tab');
+  document.querySelectorAll('.sb').forEach(sb => {
+    const v = sb.dataset.v;
+    const body = tab==='widgets' ? widgets(v) : notifList;
+    sb.innerHTML = `
+      <div class="sb-head"><div class="sb-tabs">
+        <div class="sb-tab ${tab==='widgets'?'on':''}">Widgets</div>
+        <div class="sb-tab ${tab==='notifs'?'on':''}">Notifications</div>
+      </div></div>
+      <div class="sb-themebar">
+        <span class="chip ${mode==='light'?'on':''}">Light</span>
+        <span class="chip ${mode==='dark'?'on':''}">Dark</span>
+        <span class="chip">Auto</span>
+      </div>
+      <div class="sb-body">${body}</div>`;
+  });
+}
+
+document.getElementById('modeSeg').onclick = e => {
+  const b = e.target.closest('button'); if(!b) return;
+  document.documentElement.setAttribute('data-mode', b.dataset.m);
+  document.querySelectorAll('#modeSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  render();
+};
+document.getElementById('tabSeg').onclick = e => {
+  const b = e.target.closest('button'); if(!b) return;
+  document.documentElement.setAttribute('data-tab', b.dataset.t);
+  document.querySelectorAll('#tabSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  render();
+};
+
+/* deep links: #light / #notifs / #light,notifs */
+location.hash.replace('#','').split(',').map(s=>s.trim()).forEach(p=>{
+  if(p==='light'||p==='dark'){ document.documentElement.setAttribute('data-mode',p);
+    document.querySelectorAll('#modeSeg button').forEach(x=>x.classList.toggle('on',x.dataset.m===p)); }
+  if(p==='notifs'||p==='widgets'){ document.documentElement.setAttribute('data-tab',p);
+    document.querySelectorAll('#tabSeg button').forEach(x=>x.classList.toggle('on',x.dataset.t===p)); }
+});
+
+render();
+</script>
+</body>
+</html>
