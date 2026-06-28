@@ -1,32 +1,40 @@
 # Raven Sidebar
 
 <p align="center">
-  <img src="icons/256x256/extension.png" alt="Raven Sidebar" width="128" height="128">
+  <img src="icons/256x256/extension.png" alt="Raven Sidebar" width="120" height="120">
 </p>
 
-A GNOME Shell extension that provides a unified right-side sidebar with calendar, clock, volume/microphone controls, and notifications.
+A right-hand sidebar for GNOME Shell. It collects the things I kept opening separate menus for: media controls, quick toggles, audio and brightness sliders, a calendar, battery, and notifications. It slides in from the edge over a frosted-glass background and stays out of the way the rest of the time.
 
-![Dark Theme](assets/dark.png)
-![Light Theme](assets/light.png)
+![Dark theme](assets/dark.png)
+![Light theme](assets/light.png)
 
-## Features
+## What's in it
 
-- **Clock & Calendar** - Displays current date, time, and an interactive monthly calendar
-- **Volume Control** - Quick access to system audio output volume
-- **Microphone Control** - Quick access to microphone input volume
-- **Notifications** - View and manage system notifications
-- **Keyboard Shortcut** - Toggle sidebar with `Super + \` (backslash)
-- **Theme Options** - Choose between system, dark, or light theme
+The sidebar has two tabs. The Widgets tab stacks:
+
+- A clock and a month calendar you can page through
+- **Now Playing** — title, artist, a scrubber, and play/skip controls for whatever's running. It talks to anything that speaks MPRIS (Spotify, browsers, most music apps).
+- **Quick toggles** for Wi-Fi, Bluetooth, Do Not Disturb and Night Light
+- Volume, microphone and brightness sliders
+- **Battery** with time remaining and a power-profile switch, plus a separate battery-health readout
+- A **habit tracker** — add a habit, tap it once a day, see the week at a glance
+- Your local IP addresses
+
+The Notifications tab mirrors the system tray: dismiss them one at a time or clear the lot.
+
+By default the colours follow the system light/dark preference. You can pin it to light or dark from the strip at the top of the panel.
 
 ## Requirements
 
-- GNOME Shell 45+
-- GJS (GNOME JavaScript)
-- Gvc (GNOME Volume Control library)
+- GNOME Shell 45–50
+- NetworkManager, UPower, and a PulseAudio or PipeWire setup — all standard on a normal GNOME desktop
 
-## Installation
+Some widgets depend on optional pieces and simply hide themselves when those aren't around: the power-profile switch needs power-profiles-daemon, the brightness slider needs GNOME 49 or newer, and album art currently only shows for locally-stored files.
 
-### From Source
+## Install
+
+From source:
 
 ```bash
 git clone https://github.com/dalpat/raven-sidebar.git
@@ -34,49 +42,34 @@ cd raven-sidebar
 ./install.sh
 ```
 
-Or manually:
+Then turn on "Raven Sidebar" in the Extensions app. On Wayland you have to log out and back in the first time before the shell will load it.
+
+## Using it
+
+Click the icon at the top-right of the panel, or press `Super + \`, to slide the sidebar in and out. Clicking anywhere outside it closes it.
+
+## Settings
+
+There's no preferences window yet, so the two settings live in GSettings:
 
 ```bash
-mkdir -p ~/.local/share/gnome-shell/extensions/raven-sidebar@dalpat.github.io/
-cp -r extension.js components/ stylesheet.css metadata.json schemas/ icons/ assets/ ~/.local/share/gnome-shell/extensions/raven-sidebar@dalpat.github.io/
-```
-
-### Enable the Extension
-
-1. Open **Extensions** app
-2. Find "Raven Sidebar" and enable it
-3. Log out and log back in (required on Wayland)
-
-### From GNOME Extensions (Coming Soon)
-
-The extension will soon be available on the [GNOME Extensions](https://extensions.gnome.org) website. Once approved, you can install it directly from there.
-
-## Usage
-
-- Click the notification icon in the top-right panel to toggle the sidebar
-- Press `Super + \` to toggle the sidebar via keyboard
-- Switch between **Widgets** and **Notifications** tabs
-
-## Configuration
-
-Configure via `gsettings`:
-
-```bash
-# Set theme (system, dark, or light)
+# theme: system, dark, or light
 gsettings set org.gnome.shell.extensions.raven-sidebar theme dark
 
-# Change keyboard shortcut
+# rebind the toggle shortcut
 gsettings set org.gnome.shell.extensions.raven-sidebar toggle-raven "['<Super>n']"
 ```
 
-## Building
+## Developing
 
-No build step required - files are used directly as ES Modules.
+The code is plain ES modules, so there's no build step. `dev.sh` copies the extension into a nested GNOME Shell and launches it, which lets you test changes without disturbing your real session:
+
+```bash
+./dev.sh
+```
+
+Tests run with `npm test` (Vitest).
 
 ## License
 
-GNU General Public License v2 - see [LICENSE](LICENSE) file.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+GPL-2.0-or-later — see [LICENSE](LICENSE). Notes for contributors are in [CONTRIBUTING.md](CONTRIBUTING.md).

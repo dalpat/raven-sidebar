@@ -16,9 +16,23 @@ export const THEME = Object.freeze({
 export const LIGHT_CSS = `
 /* Sidebar shell */
 .raven-light.raven-sidebar {
-    background-color: rgba(240, 240, 248, 0.97);
+    background-color: rgba(245, 246, 252, 0.62);
     border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
+
+/* Quick toggles */
+.raven-light .raven-toggle        { background-color: rgba(0,0,0,0.05); }
+.raven-light .raven-toggle:hover  { background-color: rgba(0,0,0,0.09); }
+.raven-light .raven-toggle-icon   { color: rgba(0,0,0,0.7); }
+.raven-light .raven-toggle-label  { color: rgba(0,0,0,0.82); }
+.raven-light .raven-toggle-status { color: rgba(0,0,0,0.5); }
+/* active toggle keeps its accent gradient + white text in both themes */
+.raven-light .raven-toggle-on .raven-toggle-icon,
+.raven-light .raven-toggle-on .raven-toggle-label,
+.raven-light .raven-toggle-on .raven-toggle-status { color: #ffffff; }
+
+/* Section labels */
+.raven-light .raven-section-label { color: rgba(0,0,0,0.4); }
 
 /* Tab bar */
 .raven-light .raven-tabbar {

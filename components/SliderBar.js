@@ -5,6 +5,7 @@ import { Component } from './Component.js';
 const BAR_H      = 6;
 const TRACK_H    = 22;
 const RADIUS     = 3;
+const THUMB_R    = 7;
 const FILL_COLOR = [0.424, 0.561, 1.0, 1.0]; // #6c8fff
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
@@ -78,6 +79,13 @@ export class SliderBar extends Component {
             rrect(0, barY, fillW, BAR_H);
             cr.fill();
         }
+
+        // Thumb — white handle centred on the fill edge, kept inside the track
+        const thumbR = THUMB_R;
+        const thumbX = Math.max(thumbR, Math.min(w - thumbR, fillW));
+        cr.setSourceRGBA(1, 1, 1, 1);
+        cr.arc(thumbX, h / 2, thumbR, 0, 2 * Math.PI);
+        cr.fill();
 
         cr.$dispose();
     }

@@ -1,5 +1,6 @@
 import St from "gi://St";
 import Clutter from "gi://Clutter";
+import Shell from "gi://Shell";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import { Component } from "./Component.js";
 import { TabBar, TAB } from "./TabBar.js";
@@ -7,15 +8,21 @@ import { ThemeManager } from "./ThemeManager.js";
 import { ThemeBar } from "./ThemeBar.js";
 import { WidgetsPage } from "./WidgetsPage.js";
 import { NotificationsPage } from "./NotificationsPage.js";
+import { NetworkService } from "./NetworkService.js";
+import { PowerService } from "./PowerService.js";
 
 const WIDTH = 380;
 const DURATION = 250;
+const BLUR_RADIUS = 32;
+const BLUR_BRIGHTNESS = 0.6;
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
+// Translucent tint sits on top of the Shell.BlurEffect backdrop (Glass look).
+// If blur fails to apply, this translucency alone is the graceful fallback.
 export const CSS = `
 .raven-sidebar {
-    background-color: #212121;
-    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    background-color: rgba(24, 22, 34, 0.55);
+    border-left: 1px solid rgba(255, 255, 255, 0.10);
 }
 `;
 
@@ -30,8 +37,10 @@ export class Sidebar extends Component {
     super();
     this._open = false;
 
+    this._net = new NetworkService();
+    this._power = new PowerService();
     this._tabBar = new TabBar({ onSwitch: (tab) => this._onTabSwitch(tab) });
-    this._widgetsPage = new WidgetsPage();
+    this._widgetsPage = new WidgetsPage({ net: this._net, power: this._power, settings });
     this._notifsPage = new NotificationsPage();
 
     this._buildOverlay();
@@ -110,6 +119,8 @@ export class Sidebar extends Component {
     this._themeManager?.destroy();
     this._widgetsPage.destroy();
     this._notifsPage.destroy();
+    this._net?.destroy();
+    this._power?.destroy();
     this._tabBar.destroy();
 
     if (this._overlay) {
@@ -184,6 +195,24 @@ export class Sidebar extends Component {
       affectsStruts: false,
       trackFullscreen: false,
     });
+
+    this._applyBlur();
+  }
+
+  // Frost the desktop behind the shell. Background mode samples the framebuffer
+  // behind the actor; the translucent CSS tint paints on top. On any failure we
+  // keep just the translucency (still a valid Glass look).
+  _applyBlur() {
+    try {
+      const blur = new Shell.BlurEffect({
+        mode: Shell.BlurMode.BACKGROUND,
+        radius: BLUR_RADIUS,
+        brightness: BLUR_BRIGHTNESS,
+      });
+      this._shell.add_effect_with_name("raven-blur", blur);
+    } catch (e) {
+      console.error("[Raven] blur unavailable, using translucency:", e);
+    }
   }
 
   _onTabSwitch(tab) {

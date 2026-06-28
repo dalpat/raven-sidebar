@@ -28,6 +28,8 @@ export const CSS = `
 `;
 
 export class VolumeWidget extends BaseWidget {
+    static get section() { return 'Audio & Display'; }
+
     constructor(deps) {
         super(deps);
         this._mixer  = deps.mixer;
