@@ -69,6 +69,43 @@ else
 fi
 echo "✅ Copy deployed (repo is NOT reachable from the extensions dir)."
 
+# ── Stop GNOME from auto-updating the dev build ──
+# This extension is published on extensions.gnome.org (EGO). GNOME's
+# periodic update check compares the *installed* version against EGO's
+# and, when EGO is newer, stages a download in extension-updates/ that
+# gets installed on the NEXT LOGIN — silently clobbering this dev copy.
+#
+# Two-part fix:
+#   1. Pin the DEPLOYED copy's version to a sentinel far above any EGO
+#      release, so the update check never thinks a newer version exists.
+#      (Only the deployed metadata.json is touched — the repo's stays at
+#      its real version.)
+#   2. Remove any update already staged for this UUID, so a previously
+#      queued update doesn't install on the next login.
+DEV_VERSION=999999
+echo "📌 Pinning deployed version to $DEV_VERSION (blocks EGO auto-update)..."
+if command -v jq >/dev/null 2>&1; then
+    tmp="$(mktemp)"
+    jq --argjson v "$DEV_VERSION" '.version = $v' "$DEST/metadata.json" > "$tmp" \
+        && mv "$tmp" "$DEST/metadata.json"
+else
+    python3 - "$DEST/metadata.json" "$DEV_VERSION" <<'PY'
+import json, sys
+path, version = sys.argv[1], int(sys.argv[2])
+with open(path) as f:
+    data = json.load(f)
+data["version"] = version
+with open(path, "w") as f:
+    json.dump(data, f, indent=2)
+PY
+fi
+
+UPDATES_DIR="$HOME/.local/share/gnome-shell/extension-updates/$EXT_UUID"
+if [ -d "$UPDATES_DIR" ]; then
+    echo "🧹 Removing staged EGO update ($UPDATES_DIR)..."
+    rm -rf "$UPDATES_DIR"
+fi
+
 # ── Compile schemas (in the deployed copy) ──
 if [ -d "$DEST/schemas" ]; then
     echo "🔧 Compiling schemas..."
