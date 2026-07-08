@@ -12,7 +12,6 @@ export const CSS = `
 .raven-calendar-header-label {
     font-size: 7.5pt;
     font-weight: bold;
-    color: rgba(255,255,255,0.3);
     letter-spacing: 1.5px;
 }
 .raven-cal-header-row {
@@ -22,35 +21,31 @@ export const CSS = `
 .raven-cal-month-label {
     font-size: 10.5pt;
     font-weight: bold;
-    color: #fff;
     text-align: center;
 }
 .raven-cal-weekday-label {
     font-size: 8pt;
     text-align: center;
     padding-bottom: 4px;
-    color: rgba(255,255,255,0.28);
 }
 .raven-cal-weekday-weekend {
-    color: rgba(170,185,255,0.45);
+    color: -st-accent-color;
 }
 .raven-calendar {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 12px;
     padding: 6px 4px;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid st-transparentize(-st-accent-color, 0.88);
 }
 .raven-cal-nav {
     padding: 2px 10px;
     border-radius: 6px;
     font-size: 14pt;
-    color: rgba(255, 255, 255, 0.5);
     background-color: transparent;
     border: none;
 }
 .raven-cal-nav:hover {
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: st-transparentize(-st-accent-color, 0.88);
 }
 
 /* Cover all pseudo-states so GNOME Shell's default button theme cannot bleed through */
@@ -63,26 +58,23 @@ export const CSS = `
     min-height: 32px;
     border-radius: 7px;
     font-size: 9pt;
-    color: rgba(255, 255, 255, 0.72);
     background-color: transparent;
     border: none;
 }
 .raven-cal-day:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    background-color: st-transparentize(-st-accent-color, 0.88);
 }
 
-/* Saturday / Sunday — subtle blue-violet tint */
+/* Saturday / Sunday — accent tint */
 .raven-cal-weekend,
 .raven-cal-weekend:focus,
 .raven-cal-weekend:active,
 .raven-cal-weekend:checked,
 .raven-cal-weekend:insensitive {
-    color: rgba(170, 185, 255, 0.65);
+    color: -st-accent-color;
 }
 .raven-cal-weekend:hover {
-    color: #c8d8ff;
-    background-color: rgba(110, 140, 255, 0.12);
+    background-color: st-transparentize(-st-accent-color, 0.86);
 }
 
 /* Today */
@@ -90,14 +82,13 @@ export const CSS = `
 .raven-cal-today:focus,
 .raven-cal-today:active,
 .raven-cal-today:checked {
-    background-color: rgba(75, 105, 240, 0.3);
-    border: 1px solid rgba(110, 140, 255, 0.6);
-    color: #c8d8ff;
+    background-color: st-transparentize(-st-accent-color, 0.72);
+    border: 1px solid st-transparentize(-st-accent-color, 0.4);
+    color: -st-accent-color;
     font-weight: bold;
 }
 .raven-cal-today:hover {
-    background-color: rgba(75, 105, 240, 0.45);
-    color: #e0eaff;
+    background-color: st-transparentize(-st-accent-color, 0.6);
 }
 `;
 

@@ -4,7 +4,7 @@ import { BaseWidget } from '../BaseWidget.js';
 
 export const CSS = `
 .raven-ip-section {
-    background-color: rgba(255,255,255,0.04);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 12px;
     padding: 14px 16px;
     spacing: 8px;
@@ -12,21 +12,15 @@ export const CSS = `
 .raven-ip-header {
     spacing: 10px;
 }
-.raven-ip-icon {
-    color: rgba(255,255,255,0.7);
-}
 .raven-ip-label {
     font-size: 10pt;
-    color: rgba(255,255,255,0.75);
 }
 .raven-ip-address {
     font-size: 9pt;
-    color: rgba(255,255,255,0.9);
     font-family: monospace;
 }
 .raven-ip-iface {
     font-size: 8pt;
-    color: rgba(255,255,255,0.35);
     min-width: 0;
 }
 .raven-ip-row {

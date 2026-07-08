@@ -7,16 +7,10 @@ const ELLIPSIZE_END = 3; // Pango.EllipsizeMode.END (Pango not imported to avoid
 // ─── Styles ───────────────────────────────────────────────────────────────────
 export const CSS = `
 .raven-notif-item {
-    background-color: rgba(255,255,255,0.05);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 10px;
     padding: 12px 14px;
     spacing: 12px;
-}
-.raven-notif-icon {
-    color: rgba(255,255,255,0.7);
-}
-.raven-notif-icon-fallback {
-    color: rgba(255,255,255,0.45);
 }
 .raven-notif-text-box {
     spacing: 3px;
@@ -24,11 +18,9 @@ export const CSS = `
 .raven-notif-title {
     font-size: 10pt;
     font-weight: 600;
-    color: #ffffff;
 }
 .raven-notif-body {
     font-size: 9pt;
-    color: rgba(255,255,255,0.42);
     line-height: 1.4;
 }
 .raven-dismiss-btn {
@@ -36,15 +28,10 @@ export const CSS = `
     border-radius: 6px;
     background-color: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.28);
     transition-duration: 120ms;
 }
 .raven-dismiss-btn:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.7);
-}
-.raven-dismiss-icon {
-    color: rgba(255,255,255,0.5);
+    background-color: st-transparentize(-st-accent-color, 0.88);
 }
 `;
 

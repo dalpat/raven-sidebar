@@ -7,27 +7,23 @@ const PROFILE_LABELS = { 'power-saver': 'Saver', 'balanced': 'Balanced', 'perfor
 
 export const CSS = `
 .raven-power-section {
-    background-color: rgba(255,255,255,0.04);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 12px;
     padding: 14px 16px;
     spacing: 8px;
 }
 .raven-power-header { spacing: 10px; }
-.raven-power-icon   { color: rgba(255,255,255,0.8); }
-.raven-power-label  { font-size: 10pt; color: rgba(255,255,255,0.82); }
-.raven-power-pct    { font-size: 17pt; font-weight: bold; color: #ffffff; }
-.raven-power-sub    { font-size: 8.5pt; color: rgba(255,255,255,0.5); }
-.raven-power-seg    { spacing: 2px; padding: 3px; border-radius: 10px; background-color: rgba(255,255,255,0.06); }
+.raven-power-label  { font-size: 10pt; }
+.raven-power-pct    { font-size: 17pt; font-weight: bold; }
+.raven-power-sub    { font-size: 8.5pt; }
+.raven-power-seg    { spacing: 2px; padding: 3px; border-radius: 10px; background-color: st-transparentize(-st-accent-color, 0.9); }
 .raven-power-seg-btn {
     font-size: 8pt; font-weight: 600; padding: 6px 0; border-radius: 8px;
-    color: rgba(255,255,255,0.55); background-color: transparent; border: none;
+    background-color: transparent; border: none;
 }
-.raven-power-seg-btn:hover { color: rgba(255,255,255,0.85); }
 .raven-power-seg-on {
-    color: #ffffff;
-    background-gradient-direction: horizontal;
-    background-gradient-start: #6c8fff;
-    background-gradient-end:   #a06cff;
+    color: -st-accent-fg-color;
+    background-color: -st-accent-color;
 }
 `;
 

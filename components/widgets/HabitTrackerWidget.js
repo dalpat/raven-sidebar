@@ -8,7 +8,7 @@ const HISTORY_RETAIN_DAYS = 56; // keep ~8 weeks of completion history
 
 export const CSS = `
 .raven-habits-section {
-    background-color: rgba(255,255,255,0.04);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 12px;
     padding: 14px 16px;
     spacing: 8px;
@@ -16,25 +16,22 @@ export const CSS = `
 .raven-habit-list { spacing: 3px; }
 .raven-habit-row  { spacing: 6px; }
 .raven-habit-main { padding: 6px 6px; border-radius: 8px; }
-.raven-habit-main:hover { background-color: rgba(255,255,255,0.06); }
-.raven-habit-name { font-size: 10pt; color: rgba(255,255,255,0.85); }
+.raven-habit-main:hover { background-color: st-transparentize(-st-accent-color, 0.9); }
+.raven-habit-name { font-size: 10pt; }
 .raven-habit-dots { spacing: 5px; }
-.raven-habit-dot  { width: 9px; height: 9px; border-radius: 99px; background-color: rgba(255,255,255,0.18); }
+.raven-habit-dot  { width: 9px; height: 9px; border-radius: 99px; background-color: st-transparentize(-st-accent-color, 0.82); }
 .raven-habit-dot-on {
-    background-gradient-direction: horizontal;
-    background-gradient-start: #6c8fff;
-    background-gradient-end:   #a06cff;
+    background-color: -st-accent-color;
 }
-.raven-habit-today { border: 1px solid rgba(255,255,255,0.55); }
-.raven-habit-del   { color: rgba(255,255,255,0.3); border-radius: 6px; padding: 2px 6px; }
-.raven-habit-del:hover { color: #ffffff; background-color: rgba(255,255,255,0.1); }
-.raven-habit-empty { font-size: 9pt; color: rgba(255,255,255,0.4); padding: 4px 0; }
+.raven-habit-today { border: 1px solid -st-accent-color; }
+.raven-habit-del   { border-radius: 6px; padding: 2px 6px; }
+.raven-habit-del:hover { background-color: st-transparentize(-st-accent-color, 0.88); }
+.raven-habit-empty { font-size: 9pt; padding: 4px 0; }
 .raven-habit-entry {
     font-size: 9pt;
     border-radius: 8px;
     padding: 6px 10px;
-    background-color: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.85);
+    background-color: st-transparentize(-st-accent-color, 0.9);
 }
 `;
 

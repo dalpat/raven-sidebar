@@ -6,14 +6,28 @@ const BAR_H      = 6;
 const TRACK_H    = 22;
 const RADIUS     = 3;
 const THUMB_R    = 7;
-const FILL_COLOR = [0.424, 0.561, 1.0, 1.0]; // #6c8fff
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
+// The Cairo paint can't read CSS colours directly. A hidden probe actor carries
+// the system accent on a *standard* property (background-color), which the paint
+// reads back as a resolved colour from its theme node. Track/thumb use the themed
+// foreground. Nothing is hardcoded — see _build / _onRepaint.
 export const CSS = `
 .raven-slider-track {
     height: ${TRACK_H}px;
 }
+.raven-slider-accent {
+    background-color: -st-accent-color;
+}
 `;
+
+// Normalise a themed colour (Clutter.Color is 0–255, Cogl.Color is 0–1) to the
+// 0–1 floats Cairo expects.
+function toRGBA(c, alpha) {
+    const scale = (c.red > 1 || c.green > 1 || c.blue > 1) ? 255 : 1;
+    const a = alpha ?? (c.alpha > 1 ? c.alpha / 255 : c.alpha);
+    return [c.red / scale, c.green / scale, c.blue / scale, a];
+}
 
 // Custom Cairo-drawn slider. Props: { onChange(value: 0–1) }
 // API: getValue(), setValue(v)
@@ -41,6 +55,13 @@ export class SliderBar extends Component {
             reactive:    true,
             style_class: 'raven-slider-track',
         });
+        // Hidden probe: carries the system accent so the Cairo paint can read a
+        // resolved colour from a standard themed property (background-color).
+        this._accentProbe = new St.Widget({
+            style_class: 'raven-slider-accent',
+            width: 0, height: 0,
+        });
+        canvas.add_child(this._accentProbe);
         // Signals on own actor — not tracked; Clutter cleans up on actor destroy.
         canvas.connect('repaint',              area        => this._onRepaint(area));
         canvas.connect('button-press-event',   (_a, event) => this._onPress(event));
@@ -67,24 +88,30 @@ export class SliderBar extends Component {
             cr.closePath();
         };
 
+        // Colours from the system theme: accent for the fill, themed foreground
+        // (faint) for the track, themed foreground (opaque) for the thumb.
+        const fg   = area.get_theme_node().get_foreground_color();
+        let accent = fg;
+        try { accent = this._accentProbe.get_theme_node().get_background_color(); } catch (_) {}
+
         // Track background
-        cr.setSourceRGBA(1, 1, 1, 0.18);
+        cr.setSourceRGBA(...toRGBA(fg, 0.22));
         rrect(0, barY, w, BAR_H);
         cr.fill();
 
-        // Filled portion
+        // Filled portion — system accent
         const fillW = w * this._value;
         if (fillW > 0) {
-            cr.setSourceRGBA(...FILL_COLOR);
+            cr.setSourceRGBA(...toRGBA(accent));
             rrect(0, barY, fillW, BAR_H);
             cr.fill();
         }
 
-        // Thumb — white handle centred on the fill edge, kept inside the track
+        // Thumb — themed foreground, reads on the fill and the track alike
         const thumbR = THUMB_R;
         const thumbX = Math.max(thumbR, Math.min(w - thumbR, fillW));
-        cr.setSourceRGBA(1, 1, 1, 1);
         cr.arc(thumbX, h / 2, thumbR, 0, 2 * Math.PI);
+        cr.setSourceRGBA(...toRGBA(fg, 1));
         cr.fill();
 
         cr.$dispose();

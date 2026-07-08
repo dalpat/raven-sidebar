@@ -12,27 +12,24 @@ export const CSS = `
 .raven-toggle {
     border-radius: 13px;
     padding: 11px 12px;
-    background-color: rgba(255,255,255,0.05);
+    background-color: st-transparentize(-st-accent-color, 0.92);
     border: 1px solid transparent;
     transition-duration: 140ms;
 }
-.raven-toggle:hover { background-color: rgba(255,255,255,0.09); }
+.raven-toggle:hover { background-color: st-transparentize(-st-accent-color, 0.86); }
 
 .raven-toggle-on {
-    background-gradient-direction: horizontal;
-    background-gradient-start: rgba(108,143,255,0.95);
-    background-gradient-end:   rgba(160,108,255,0.90);
-    border: 1px solid rgba(255,255,255,0.18);
+    background-color: -st-accent-color;
+    border: 1px solid -st-accent-color;
 }
 
 .raven-toggle-row    { spacing: 9px; }
-.raven-toggle-icon   { color: rgba(255,255,255,0.82); }
-.raven-toggle-label  { font-size: 9.5pt; font-weight: 600; color: rgba(255,255,255,0.9); }
-.raven-toggle-status { font-size: 8pt; color: rgba(255,255,255,0.45); }
+.raven-toggle-label  { font-size: 9.5pt; font-weight: 600; }
+.raven-toggle-status { font-size: 8pt; }
 
 .raven-toggle-on .raven-toggle-icon,
-.raven-toggle-on .raven-toggle-label  { color: #ffffff; }
-.raven-toggle-on .raven-toggle-status { color: rgba(255,255,255,0.82); }
+.raven-toggle-on .raven-toggle-label,
+.raven-toggle-on .raven-toggle-status { color: -st-accent-fg-color; }
 `;
 
 // Look up a GSettings schema only if it's installed, so a missing schema

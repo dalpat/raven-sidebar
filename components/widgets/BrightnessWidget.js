@@ -6,7 +6,7 @@ import { SliderBar } from '../SliderBar.js';
 
 export const CSS = `
 .raven-brightness-section {
-    background-color: rgba(255,255,255,0.04);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 12px;
     padding: 14px 16px;
     spacing: 10px;
@@ -14,16 +14,11 @@ export const CSS = `
 .raven-brightness-header {
     spacing: 10px;
 }
-.raven-brightness-icon {
-    color: rgba(255,255,255,0.7);
-}
 .raven-brightness-label {
     font-size: 10pt;
-    color: rgba(255,255,255,0.75);
 }
 .raven-brightness-perc {
     font-size: 9pt;
-    color: rgba(255,255,255,0.4);
 }
 `;
 

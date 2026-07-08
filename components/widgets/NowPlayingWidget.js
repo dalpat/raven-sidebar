@@ -11,7 +11,7 @@ const RESCAN_DEBOUNCE_MS = 250;
 
 export const CSS = `
 .raven-np-section {
-    background-color: rgba(255,255,255,0.04);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 12px;
     padding: 14px 16px;
     spacing: 10px;
@@ -19,34 +19,30 @@ export const CSS = `
 .raven-np-main  { spacing: 13px; }
 .raven-np-art {
     width: 58px; height: 58px; border-radius: 10px;
-    background-gradient-direction: vertical;
-    background-gradient-start: rgb(125,91,230);
-    background-gradient-end:   rgb(224,81,138);
+    background-color: -st-accent-color;
 }
-.raven-np-art-icon { color: rgba(255,255,255,0.92); }
+.raven-np-art-icon { color: -st-accent-fg-color; }
 .raven-np-meta  { spacing: 2px; }
-.raven-np-title  { font-size: 11pt; font-weight: bold; color: #ffffff; }
-.raven-np-artist { font-size: 9pt; color: rgba(255,255,255,0.55); }
+.raven-np-title  { font-size: 11pt; font-weight: bold; }
+.raven-np-artist { font-size: 9pt; }
 .raven-np-track {
     height: 4px; border-radius: 999px;
-    background-color: rgba(255,255,255,0.18);
+    background-color: st-transparentize(-st-accent-color, 0.82);
 }
 .raven-np-fill {
     border-radius: 999px;
-    background-gradient-direction: horizontal;
-    background-gradient-start: #6c8fff;
-    background-gradient-end:   #a06cff;
+    background-color: -st-accent-color;
 }
-.raven-np-time { font-size: 7.5pt; color: rgba(255,255,255,0.5); }
+.raven-np-time { font-size: 7.5pt; }
 .raven-np-ctrl { spacing: 18px; }
-.raven-np-btn  { color: #ffffff; padding: 4px; border-radius: 99px; }
-.raven-np-btn:hover { background-color: rgba(255,255,255,0.10); }
+.raven-np-btn  { padding: 4px; border-radius: 99px; }
+.raven-np-btn:hover { background-color: st-transparentize(-st-accent-color, 0.88); }
 .raven-np-play {
-    background-color: rgba(255,255,255,0.14);
+    background-color: st-transparentize(-st-accent-color, 0.86);
     border-radius: 99px; width: 34px; height: 34px;
 }
-.raven-np-play:hover { background-color: rgba(255,255,255,0.22); }
-.raven-np-empty { font-size: 10pt; color: rgba(255,255,255,0.4); padding: 8px 0; }
+.raven-np-play:hover { background-color: st-transparentize(-st-accent-color, 0.78); }
+.raven-np-empty { font-size: 10pt; padding: 8px 0; }
 `;
 
 // Watches MPRIS players on the session bus and exposes the active one. Fully
@@ -328,7 +324,7 @@ export class NowPlayingWidget extends BaseWidget {
         this._artistLabel.text = this._media.artist || '';
         this._artistLabel.visible = !!this._media.artist;
 
-        // album art: only file:// is loaded directly; otherwise the gradient + note
+        // album art: only file:// is loaded directly; otherwise the accent-filled note
         const url = this._media.artUrl;
         if (url && url.startsWith('file://')) {
             this._artIcon.gicon = new Gio.FileIcon({ file: Gio.File.new_for_uri(url) });

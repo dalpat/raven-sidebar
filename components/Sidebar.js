@@ -1,11 +1,8 @@
 import St from "gi://St";
 import Clutter from "gi://Clutter";
-import Shell from "gi://Shell";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import { Component } from "./Component.js";
 import { TabBar, TAB } from "./TabBar.js";
-import { ThemeManager } from "./ThemeManager.js";
-import { ThemeBar } from "./ThemeBar.js";
 import { WidgetsPage } from "./WidgetsPage.js";
 import { NotificationsPage } from "./NotificationsPage.js";
 import { NetworkService } from "./NetworkService.js";
@@ -13,21 +10,23 @@ import { PowerService } from "./PowerService.js";
 
 const WIDTH = 380;
 const DURATION = 250;
-const BLUR_RADIUS = 32;
-const BLUR_BRIGHTNESS = 0.6;
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
-// Translucent tint sits on top of the Shell.BlurEffect backdrop (Glass look).
-// If blur fails to apply, this translucency alone is the graceful fallback.
+// The panel inherits the shell's themed menu surface via the 'popup-menu-content'
+// class (see _buildShell): an opaque background and foreground colour that follow
+// the system light/dark theme. Here we only reset geometry for a full-height edge
+// panel — no colours, so nothing is hardcoded and it tracks the system theme.
 export const CSS = `
 .raven-sidebar {
-    background-color: rgba(24, 22, 34, 0.55);
-    border-left: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
 }
 `;
 
 // Top-level sidebar component. Props: { settings: Gio.Settings }
-// Manages the overlay, shell container, tab bar, theme bar, and the two pages.
+// Manages the overlay, shell container, tab bar, and the two pages.
 // Exposes toggle() / show() / hide().
 //
 // Does NOT extend Component because it has two root chrome actors (_overlay, _shell)
@@ -45,12 +44,6 @@ export class Sidebar extends Component {
 
     this._buildOverlay();
     this._buildShell();
-
-    // ThemeManager needs this._shell to exist first
-    this._themeManager = new ThemeManager({ settings, shell: this._shell });
-    this._themeBar = new ThemeBar({ themeManager: this._themeManager });
-    // Insert theme bar between tab bar (index 0) and the page actors
-    this._shell.insert_child_at_index(this._themeBar.actor, 1);
   }
 
   toggle() {
@@ -115,8 +108,6 @@ export class Sidebar extends Component {
       this._shell.translation_x = 0;
     }
 
-    this._themeBar?.destroy();
-    this._themeManager?.destroy();
     this._widgetsPage.destroy();
     this._notifsPage.destroy();
     this._net?.destroy();
@@ -174,8 +165,11 @@ export class Sidebar extends Component {
     const monitor = this._getMonitor();
     const panelH = Main.panel.height;
 
+    // 'popup-menu-content' pulls the shell's themed menu surface (opaque
+    // background + foreground that follow the system light/dark theme); our
+    // 'raven-sidebar' rules only override geometry, never colour.
     this._shell = new St.BoxLayout({
-      style_class: "raven-sidebar",
+      style_class: "popup-menu-content raven-sidebar",
       orientation: Clutter.Orientation.VERTICAL,
       reactive: true,
       visible: false,
@@ -186,7 +180,6 @@ export class Sidebar extends Component {
     });
 
     this._shell.add_child(this._tabBar.actor);
-    // ThemeBar inserted at index 1 after construction (needs ThemeManager first)
     this._shell.add_child(this._widgetsPage.actor);
     this._shell.add_child(this._notifsPage.actor);
     this._notifsPage.actor.hide(); // start on Widgets tab
@@ -195,24 +188,6 @@ export class Sidebar extends Component {
       affectsStruts: false,
       trackFullscreen: false,
     });
-
-    this._applyBlur();
-  }
-
-  // Frost the desktop behind the shell. Background mode samples the framebuffer
-  // behind the actor; the translucent CSS tint paints on top. On any failure we
-  // keep just the translucency (still a valid Glass look).
-  _applyBlur() {
-    try {
-      const blur = new Shell.BlurEffect({
-        mode: Shell.BlurMode.BACKGROUND,
-        radius: BLUR_RADIUS,
-        brightness: BLUR_BRIGHTNESS,
-      });
-      this._shell.add_effect_with_name("raven-blur", blur);
-    } catch (e) {
-      console.error("[Raven] blur unavailable, using translucency:", e);
-    }
   }
 
   _onTabSwitch(tab) {
