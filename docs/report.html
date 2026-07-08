@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raven Sidebar — Glass Theme Work: Status Report</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --panel-2: #eef1f6;
+    --text: #1a2233;
+    --muted: #5b6575;
+    --accent: #2563eb;
+    --green: #16a34a;
+    --amber: #b45309;
+    --red: #dc2626;
+    --border: #d9dfe8;
+    --mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2.5rem 1.5rem 5rem;
+    background: var(--bg); color: var(--text);
+    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, Cantarell, sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.7rem; margin: 0 0 .3rem; }
+  .subtitle { color: var(--muted); margin: 0 0 2rem; }
+  h2 { font-size: 1.2rem; margin: 2.5rem 0 .8rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); }
+  code { font-family: var(--mono); font-size: .85em; background: var(--panel-2); padding: .1em .4em; border-radius: 4px; }
+  pre { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: .82rem; line-height: 1.5; }
+  .verdict {
+    display: flex; gap: 1rem; align-items: flex-start;
+    background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--green);
+    border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.5rem 0;
+  }
+  .verdict .mark { font-size: 1.6rem; line-height: 1; }
+  .verdict p { margin: 0; }
+  .badge { display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .04em; padding: .15em .6em; border-radius: 999px; vertical-align: middle; }
+  .badge.ok { background: color-mix(in srgb, var(--green) 18%, transparent); color: var(--green); }
+  .badge.warn { background: color-mix(in srgb, var(--amber) 18%, transparent); color: var(--amber); }
+  .badge.info { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: .92rem; }
+  th, td { text-align: left; padding: .6rem .9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--panel-2); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  .muted { color: var(--muted); }
+  ul { padding-left: 1.3rem; }
+  li { margin: .35rem 0; }
+  .gitgraph { position: relative; }
+  .gitgraph .lane { border-left: 2px solid var(--border); margin-left: .6rem; padding-left: 1.2rem; }
+  .commit { position: relative; padding: .35rem 0; }
+  .commit::before {
+    content: ""; position: absolute; left: -1.62rem; top: .85rem;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+  }
+  .commit.merge::before { background: var(--green); }
+  .commit .hash { font-family: var(--mono); font-size: .8rem; color: var(--accent); margin-right: .5rem; }
+  .commit .refs { font-family: var(--mono); font-size: .72rem; color: var(--amber); margin-left: .5rem; }
+  .footer { margin-top: 3rem; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Glass Theme Work — Status Report</h1>
+<p class="subtitle">raven-sidebar-fresh &nbsp;·&nbsp; generated 3 July 2026</p>
+
+<div class="verdict">
+  <div class="mark">✅</div>
+  <p><strong>Yes, the glass theme work is in main</strong> — on the remote. Commit <code>4607105</code> ("feat: glass redesign + media, power, and habit widgets") was merged into <code>origin/main</code> via <strong>PR&nbsp;#22</strong> (merge commit <code>ed097ef</code>). The reason it looked confusing: your <em>local</em> <code>main</code> branch is 2 commits behind and hasn't pulled the merge yet.</p>
+</div>
+
+<h2>1. Where each branch stands</h2>
+<table>
+  <tr><th>Branch</th><th>Tip commit</th><th>Has glass work?</th></tr>
+  <tr>
+    <td><code>origin/main</code> (GitHub)</td>
+    <td><code>ed097ef</code> — Merge PR #22</td>
+    <td><span class="badge ok">YES — MERGED</span></td>
+  </tr>
+  <tr>
+    <td><code>main</code> (your machine)</td>
+    <td><code>00bec0b</code> — feat(build): add dev script</td>
+    <td><span class="badge warn">NO — 2 COMMITS BEHIND</span></td>
+  </tr>
+  <tr>
+    <td><code>feat/glass-sidebar-widgets</code> <span class="muted">(you are here)</span></td>
+    <td><code>4607105</code> — the glass commit itself</td>
+    <td><span class="badge ok">YES</span></td>
+  </tr>
+</table>
+
+<h2>2. The history, visually</h2>
+<div class="gitgraph"><div class="lane">
+  <div class="commit merge"><span class="hash">ed097ef</span> Merge pull request #22 from dalpat/feat/glass-sidebar-widgets <span class="refs">← origin/main</span></div>
+  <div class="commit"><span class="hash">4607105</span> feat: glass redesign + media, power, and habit widgets <span class="refs">← feat/glass-sidebar-widgets (HEAD)</span></div>
+  <div class="commit"><span class="hash">00bec0b</span> feat(build): add dev script <span class="refs">← main (local)</span></div>
+  <div class="commit"><span class="hash">379fd71</span> feat(widgets): add IP widget</div>
+  <div class="commit"><span class="hash">0915018</span> chore: remove progress.md</div>
+</div></div>
+<p>Local <code>main</code> simply stopped at <code>00bec0b</code>. Everything above it already exists on GitHub's main. Nothing on your feature branch is unmerged — its tip <code>4607105</code> is an ancestor of <code>origin/main</code>.</p>
+
+<h2>3. What the glass work actually contains</h2>
+<p>One commit, <strong>20 files, +2,211 / −83 lines</strong>. It reworks the sidebar into a translucent, blurred "glass" panel and adds five widgets plus two shared services:</p>
+<table>
+  <tr><th>Piece</th><th>File</th><th>What it does</th></tr>
+  <tr><td>Now Playing</td><td><code>widgets/NowPlayingWidget.js</code></td><td>MPRIS media controls — title/artist, scrubber, transport buttons; async D-Bus; prefers the player that's actually playing</td></tr>
+  <tr><td>Quick Toggles</td><td><code>widgets/QuickTogglesWidget.js</code></td><td>Wi-Fi, Bluetooth, Do Not Disturb, Night Light switches</td></tr>
+  <tr><td>Power &amp; Battery</td><td><code>widgets/PowerWidget.js</code></td><td>Charge / time remaining + power-profile switching (UPower + power-profiles-daemon)</td></tr>
+  <tr><td>Battery Health</td><td><code>widgets/BatteryHealthWidget.js</code></td><td>Design-capacity %, charge cycles, energy stats</td></tr>
+  <tr><td>Habit Tracker</td><td><code>widgets/HabitTrackerWidget.js</code></td><td>Per-day completion with weekly view, persisted in GSettings (new <code>habits</code> key)</td></tr>
+  <tr><td>NetworkService</td><td><code>components/NetworkService.js</code></td><td>Single shared NetworkManager client, injected into widgets; also replaces IPWidget's blocking <code>ip</code> subprocess</td></tr>
+  <tr><td>PowerService</td><td><code>components/PowerService.js</code></td><td>Single shared UPower client for the power widgets</td></tr>
+  <tr><td>Glass theme</td><td><code>ThemeManager.js</code>, <code>Sidebar.js</code>, <code>SliderBar.js</code></td><td>Translucent blurred panel, section labels grouping the widget stack, sliders with a drawn thumb</td></tr>
+</table>
+<p>All widgets degrade gracefully when their backend is absent (no battery, no MPRIS player, no power-profiles-daemon, GNOME &lt; 49 brightness).</p>
+
+<h2>4. What is NOT merged — your local working tree <span class="badge warn">UNCOMMITTED</span></h2>
+<p>These changes exist only on your machine and are not part of PR #22 or any commit:</p>
+<ul>
+  <li><strong>Modified:</strong> <code>dev.sh</code> — adds an EGO auto-update guard: pins the <em>deployed</em> copy's <code>metadata.json</code> version to <code>999999</code> so GNOME's update check never clobbers the dev build on next login, and removes any already-staged update for the extension's UUID. Looks intentional and useful — worth committing.</li>
+  <li><strong>Deleted (in working tree):</strong> <code>docs/ui-proposal.html</code>, <code>docs/widget-proposal.html</code> <span class="muted">(the two design mockups that came in with the glass commit)</span>, plus <code>docs/gjs-guide.md</code> and <code>docs/gjs-guide-updated.md</code>. If the deletions were accidental, restore them with <code>git checkout -- docs/</code>; if intentional, commit them.</li>
+</ul>
+
+<h2>5. Suggested next steps</h2>
+<pre># 1. Bring local main up to date (this pulls in the glass merge)
+git checkout main
+git pull
+
+# 2. Decide about the docs/ deletions on the feature branch
+#    restore:  git checkout feat/glass-sidebar-widgets -- docs/
+#    or keep the deletions and commit them
+
+# 3. Commit the dev.sh auto-update guard (new small PR or direct to main)
+
+# 4. Optionally delete the merged feature branch
+git branch -d feat/glass-sidebar-widgets
+git push origin --delete feat/glass-sidebar-widgets</pre>
+
+<div class="footer">Sources: <code>git log</code>, <code>git branch --contains</code>, <code>git merge-base --is-ancestor</code>, <code>git status</code>, <code>git diff dev.sh</code> — verified on this repo at generation time.</div>
+
+</main>
+</body>
+</html>
