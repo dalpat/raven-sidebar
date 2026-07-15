@@ -13,21 +13,6 @@
       </description>
     </key>
 
-    <key name="theme" type="s">
-      <choices>
-        <choice value="system"/>
-        <choice value="dark"/>
-        <choice value="light"/>
-      </choices>
-      <default>'system'</default>
-      <summary>Sidebar color theme</summary>
-      <description>
-        Color theme for the Raven sidebar.
-        'system' follows org.gnome.desktop.interface color-scheme.
-        Change with: gsettings set org.gnome.shell.extensions.raven-sidebar theme dark
-      </description>
-    </key>
-
     <key name="habits" type="s">
       <default>'[]'</default>
       <summary>Habit tracker data</summary>

@@ -5,25 +5,20 @@ import { BaseWidget } from '../BaseWidget.js';
 
 export const CSS = `
 .raven-clock-box {
-    background: linear-gradient(145deg, rgba(55,65,175,0.4), rgba(120,45,160,0.35));
-    border-radius: 14px;
-    padding: 20px 24px;
+    padding: 20px 24px 8px;
     spacing: 2px;
 }
 .raven-clock-day {
     font-size: 11pt;
-    color: rgba(255,255,255,0.5);
     letter-spacing: 1px;
 }
 .raven-clock-date {
     font-size: 18pt;
     font-weight: bold;
-    color: #ffffff;
 }
 .raven-clock-time {
     font-size: 46pt;
     font-weight: bold;
-    color: #ffffff;
 }
 `;
 

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raven Sidebar — Theme Work: Status Report</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --panel-2: #eef1f6;
+    --text: #1a2233;
+    --muted: #5b6575;
+    --accent: #2563eb;
+    --green: #16a34a;
+    --amber: #b45309;
+    --red: #dc2626;
+    --border: #d9dfe8;
+    --mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2.5rem 1.5rem 5rem;
+    background: var(--bg); color: var(--text);
+    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, Cantarell, sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.7rem; margin: 0 0 .3rem; }
+  .subtitle { color: var(--muted); margin: 0 0 2rem; }
+  h2 { font-size: 1.2rem; margin: 2.5rem 0 .8rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); }
+  code { font-family: var(--mono); font-size: .85em; background: var(--panel-2); padding: .1em .4em; border-radius: 4px; }
+  pre { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: .82rem; line-height: 1.5; }
+  .verdict {
+    display: flex; gap: 1rem; align-items: flex-start;
+    background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--green);
+    border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.5rem 0;
+  }
+  .verdict .mark { font-size: 1.6rem; line-height: 1; }
+  .verdict p { margin: 0; }
+  .badge { display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .04em; padding: .15em .6em; border-radius: 999px; vertical-align: middle; }
+  .badge.ok { background: color-mix(in srgb, var(--green) 18%, transparent); color: var(--green); }
+  .badge.warn { background: color-mix(in srgb, var(--amber) 18%, transparent); color: var(--amber); }
+  .badge.info { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: .92rem; }
+  th, td { text-align: left; padding: .6rem .9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--panel-2); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  .muted { color: var(--muted); }
+  ul { padding-left: 1.3rem; }
+  li { margin: .35rem 0; }
+  .gitgraph { position: relative; }
+  .gitgraph .lane { border-left: 2px solid var(--border); margin-left: .6rem; padding-left: 1.2rem; }
+  .commit { position: relative; padding: .35rem 0; }
+  .commit::before {
+    content: ""; position: absolute; left: -1.62rem; top: .85rem;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+  }
+  .commit.merge::before { background: var(--green); }
+  .commit.today::before { background: var(--amber); }
+  .commit .hash { font-family: var(--mono); font-size: .8rem; color: var(--accent); margin-right: .5rem; }
+  .commit .refs { font-family: var(--mono); font-size: .72rem; color: var(--amber); margin-left: .5rem; }
+  .footer { margin-top: 3rem; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Sidebar Theme Work — Status Report</h1>
+<p class="subtitle">raven-sidebar-fresh &nbsp;·&nbsp; updated 8 July 2026</p>
+
+<div class="verdict">
+  <div class="mark">✅</div>
+  <p><strong>The blur is gone and the styling now follows the system theme.</strong> The flickery <code>Shell.BlurEffect</code> is removed and every colour is driven by GNOME's own theme (no hardcoded colours, no gradients). This is committed on <code>feat/glass-sidebar-widgets</code> as three commits (tip <code>08a1f56</code>), which is now <strong>3 commits ahead of <code>origin/main</code></strong>. The <em>older</em> blur-and-gradient "glass" version is what currently sits on <code>origin/main</code> (merged earlier via PR&nbsp;#22) — today's work supersedes it but is not merged yet.</p>
+</div>
+
+<h2>1. Where each branch stands</h2>
+<table>
+  <tr><th>Branch</th><th>Tip commit</th><th>Theme state</th></tr>
+  <tr>
+    <td><code>feat/glass-sidebar-widgets</code> <span class="muted">(you are here)</span></td>
+    <td><code>08a1f56</code> — docs cleanup</td>
+    <td><span class="badge ok">SYSTEM-THEME REBUILD</span></td>
+  </tr>
+  <tr>
+    <td><code>origin/main</code> (GitHub)</td>
+    <td><code>ed097ef</code> — Merge PR #22</td>
+    <td><span class="badge warn">OLD BLUR/GRADIENT GLASS</span></td>
+  </tr>
+  <tr>
+    <td><code>main</code> (your machine)</td>
+    <td><code>00bec0b</code> — feat(build): add dev script</td>
+    <td><span class="badge warn">BEHIND — no glass, no rebuild</span></td>
+  </tr>
+</table>
+<p><code>feat/glass-sidebar-widgets</code> has diverged from <code>origin/main</code>: it shares the glass commit <code>4607105</code> but adds the three rebuild commits on top, none of which are on main yet.</p>
+
+<h2>2. The history, visually</h2>
+<div class="gitgraph"><div class="lane">
+  <div class="commit today"><span class="hash">08a1f56</span> docs: drop old gjs guides and proposals, add status report <span class="refs">← feat/glass-sidebar-widgets (HEAD)</span></div>
+  <div class="commit today"><span class="hash">159f7ef</span> chore(dev): stop EGO auto-update from clobbering the dev build</div>
+  <div class="commit today"><span class="hash">5c94aa2</span> refactor(theme): follow the system theme; drop blur and the manual pin</div>
+  <div class="commit merge"><span class="hash">ed097ef</span> Merge pull request #22 (old glass) <span class="refs">← origin/main</span></div>
+  <div class="commit"><span class="hash">4607105</span> feat: glass redesign + media, power, and habit widgets</div>
+  <div class="commit"><span class="hash">00bec0b</span> feat(build): add dev script <span class="refs">← main (local)</span></div>
+  <div class="commit"><span class="hash">379fd71</span> feat(widgets): add IP widget</div>
+</div></div>
+<p class="muted">Amber nodes are today's rebuild, sitting on top of the glass commit that is already merged to main.</p>
+
+<h2>3. What today's rebuild changed</h2>
+<p>Three commits. The core one, <code>5c94aa2</code>, is <strong>23 files, +156 / −486</strong> — it deletes far more styling than it adds, because a hand-rolled palette was replaced with system-theme primitives.</p>
+<table>
+  <tr><th>Change</th><th>Why</th></tr>
+  <tr>
+    <td><strong>Removed the blur</strong> <span class="badge info">Sidebar.js</span></td>
+    <td><code>Shell.BlurEffect</code> in <code>BACKGROUND</code> mode re-samples the framebuffer every frame; it shakes/flickers at the Mutter level and can't be stabilised from an extension. The translucent themed surface stands in for it.</td>
+  </tr>
+  <tr>
+    <td><strong>Dropped the manual pin</strong> <span class="badge info">ThemeBar.js, ThemeManager.js</span></td>
+    <td>Deleted the Light/Dark/Auto strip and the <code>theme</code> gsetting (~270 lines). The sidebar follows the system instead of being pinned by hand.</td>
+  </tr>
+  <tr>
+    <td><strong>No hardcoded colours, no gradients</strong> <span class="badge info">every widget</span></td>
+    <td>Panel reuses <code>popup-menu-content</code>; text inherits the themed foreground; accents use <code>-st-accent-color</code>; subtle fills use <code>st-transparentize(...)</code>. Every literal <code>rgba()</code>/<code>#hex</code> and every gradient was removed.</td>
+  </tr>
+  <tr>
+    <td><strong>Themed slider</strong> <span class="badge info">SliderBar.js</span></td>
+    <td>The Cairo paint can't read CSS, so a hidden probe carries <code>-st-accent-color</code> and the paint reads the resolved accent + foreground from the theme node.</td>
+  </tr>
+  <tr>
+    <td><strong>Survives theme reloads</strong> <span class="badge info">StyleManager.js</span></td>
+    <td>GNOME rebuilds its <code>StTheme</code> on a light/dark switch and drops externally-loaded stylesheets. StyleManager now re-applies on <code>ThemeContext::changed</code>, so styles don't vanish mid-switch.</td>
+  </tr>
+</table>
+<p>The widget set from the glass commit (Now Playing, Quick Toggles, Power/Battery, Battery Health, Habit Tracker, IP, plus the shared Network/Power services) is unchanged — only their styling was reworked.</p>
+
+<h2>4. Theme behaviour &amp; one known limitation <span class="badge warn">BY DESIGN</span></h2>
+<p>The sidebar follows the GNOME <strong>shell</strong> theme: it goes light only when <code>color-scheme = prefer-light</code>, matching GNOME's own Quick Settings and calendar popups.</p>
+<ul>
+  <li>The system <strong>dark-mode pill does not flip it to light.</strong> The pill only toggles between <code>prefer-dark</code> and <code>default</code>, and GNOME Shell renders <code>default</code> as <em>dark</em> chrome — so the whole shell (ours included) stays dark. Only an explicit <code>prefer-light</code> is a light shell.</li>
+  <li>This was a deliberate choice ("option A"): match the shell with zero defined colours. Making the pill flip the sidebar would mean following the <em>app</em> preference and defining our own light surface (the shell offers none for <code>default</code>) — deferred for now.</li>
+</ul>
+
+<h2>5. Suggested next steps</h2>
+<pre># 1. Get today's rebuild onto main (supersedes the old glass on origin/main)
+#    open a PR from feat/glass-sidebar-widgets, or fast-forward main to it
+
+# 2. Bring local main up to date first (it is still behind)
+git checkout main
+git pull
+
+# 3. Verify visually before merging: ./dev.sh, open the sidebar,
+#    and confirm it follows the system theme + accent
+
+# 4. After merge, delete the feature branch
+git branch -d feat/glass-sidebar-widgets
+git push origin --delete feat/glass-sidebar-widgets</pre>
+
+<div class="footer">Sources: <code>git log</code>, <code>git rev-list --left-right --count</code>, <code>git rev-parse</code>, <code>git diff --stat</code> — verified on this repo at update time (8 July 2026).</div>
+
+</main>
+</body>
+</html>

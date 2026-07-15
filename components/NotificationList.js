@@ -16,7 +16,6 @@ export const CSS = `
 .raven-notif-count-label {
     font-size: 7.5pt;
     font-weight: bold;
-    color: rgba(255,255,255,0.3);
     letter-spacing: 1.5px;
 }
 .raven-notif-items {
@@ -24,22 +23,19 @@ export const CSS = `
 }
 .raven-notif-empty {
     font-size: 10pt;
-    color: rgba(255,255,255,0.22);
     padding: 24px 0;
     text-align: center;
 }
 .raven-clear-btn {
     font-size: 8pt;
-    color: rgba(255, 255, 255, 0.6);
     padding: 4px 10px;
     border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: st-transparentize(-st-accent-color, 0.86);
     border: none;
     transition-duration: 120ms;
 }
 .raven-clear-btn:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.16);
+    background-color: st-transparentize(-st-accent-color, 0.78);
 }
 `;
 

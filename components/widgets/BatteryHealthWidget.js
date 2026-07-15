@@ -4,17 +4,17 @@ import { BaseWidget } from '../BaseWidget.js';
 
 export const CSS = `
 .raven-health-section {
-    background-color: rgba(255,255,255,0.04);
+    background-color: st-transparentize(-st-accent-color, 0.93);
     border-radius: 12px;
     padding: 14px 16px;
     spacing: 6px;
 }
 .raven-health-top    { spacing: 8px; }
-.raven-health-pct    { font-size: 17pt; font-weight: bold; color: #ffffff; }
-.raven-health-cap    { font-size: 9pt; color: rgba(255,255,255,0.5); }
+.raven-health-pct    { font-size: 17pt; font-weight: bold; }
+.raven-health-cap    { font-size: 9pt; }
 .raven-health-row    { spacing: 8px; }
-.raven-health-key    { font-size: 9.5pt; color: rgba(255,255,255,0.72); }
-.raven-health-val    { font-size: 9.5pt; color: rgba(255,255,255,0.55); }
+.raven-health-key    { font-size: 9.5pt; }
+.raven-health-val    { font-size: 9.5pt; }
 `;
 
 export class BatteryHealthWidget extends BaseWidget {

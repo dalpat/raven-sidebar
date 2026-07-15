@@ -14,12 +14,10 @@ export const CSS = `
     font-size: 7.5pt;
     font-weight: bold;
     letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.34);
     margin-top: 2px;
 }
 .raven-error-label {
-    color: #ff4444;
-    background: rgba(255,0,0,0.15);
+    background-color: st-transparentize(-st-accent-color, 0.9);
     border-radius: 6px;
     padding: 8px;
     font-size: 9pt;

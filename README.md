@@ -23,7 +23,7 @@ The sidebar has two tabs. The Widgets tab stacks:
 
 The Notifications tab mirrors the system tray: dismiss them one at a time or clear the lot.
 
-By default the colours follow the system light/dark preference. You can pin it to light or dark from the strip at the top of the panel.
+The colours follow your system theme and accent automatically — light or dark, whatever accent you've chosen — so it always matches the rest of the desktop.
 
 ## Requirements
 
@@ -50,12 +50,9 @@ Click the icon at the top-right of the panel, or press `Super + \`, to slide the
 
 ## Settings
 
-There's no preferences window yet, so the two settings live in GSettings:
+There's no preferences window yet, so the toggle shortcut lives in GSettings:
 
 ```bash
-# theme: system, dark, or light
-gsettings set org.gnome.shell.extensions.raven-sidebar theme dark
-
 # rebind the toggle shortcut
 gsettings set org.gnome.shell.extensions.raven-sidebar toggle-raven "['<Super>n']"
 ```

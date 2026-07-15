@@ -7,12 +7,13 @@ export const TAB = Object.freeze({
 });
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
+// No hardcoded colours: text inherits the themed foreground, dividers/hover/active
+// derive from the system accent. Follows the system light/dark theme + accent.
 export const CSS = `
 .raven-tabbar {
     padding: 10px 12px 8px;
     spacing: 4px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    background-color: rgba(255, 255, 255, 0.015);
+    border-bottom: 1px solid st-transparentize(-st-accent-color, 0.88);
 }
 
 .raven-tab {
@@ -20,20 +21,18 @@ export const CSS = `
     border-radius: 8px;
     font-size: 10pt;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.4);
     background-color: transparent;
     border: none;
     transition-duration: 120ms;
 }
 
 .raven-tab:hover {
-    color: rgba(255, 255, 255, 0.7);
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: st-transparentize(-st-accent-color, 0.9);
 }
 
 .raven-tab-active {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.1);
+    color: -st-accent-color;
+    background-color: st-transparentize(-st-accent-color, 0.86);
 }
 `;
 
